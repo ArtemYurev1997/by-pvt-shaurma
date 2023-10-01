@@ -1,8 +1,6 @@
 package by.pvt.shaurma.core.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +11,9 @@ import java.time.LocalDate;
 
 @Table(schema = "shaurmasch", name ="admin")
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @PrimaryKeyJoinColumn(name = "user_admin_id")
@@ -26,4 +26,12 @@ public class Admin extends User{
     private String post;
     @Column(name = "amount_spent")
     private BigDecimal salary;
+
+    public Admin(Long id, String name, String surname, String login, String password, String role, LocalDate dateEnter, LocalDate dateExit, String post, BigDecimal salary) {
+        super(id, name, surname, login, password, role);
+        this.dateEnter = dateEnter;
+        this.dateExit = dateExit;
+        this.post = post;
+        this.salary = salary;
+    }
 }

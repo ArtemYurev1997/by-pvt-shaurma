@@ -14,7 +14,7 @@ public class HibernateJavaConfiguration {
 
     static {
         Properties properties = new Properties();
-        properties.setProperty("hibernate.hbm2ddl.auto", "create");
+        properties.setProperty("hibernate.hbm2ddl.auto", "none");
         properties.setProperty("hibernate.use_sql_comments", "true");
         properties.setProperty("hibernate.format_sql", "true");
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
@@ -29,9 +29,9 @@ public class HibernateJavaConfiguration {
         configuration.addAnnotatedClass(User.class);
         configuration.addAnnotatedClass(Good.class);
         configuration.addAnnotatedClass(Order.class);
-        configuration.addAnnotatedClass(Basket.class);
         configuration.addAnnotatedClass(Admin.class);
         configuration.addAnnotatedClass(Client.class);
+        configuration.addAnnotatedClass(Comment.class);
         serviceRegistryBuilder = new StandardServiceRegistryBuilder();
         serviceRegistryBuilder.applySettings(properties);
     }

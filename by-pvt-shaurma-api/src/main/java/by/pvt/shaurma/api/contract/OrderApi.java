@@ -10,7 +10,7 @@ public interface OrderApi {
 
     OrderResponse checkOut();
 
-    List<OrderResponse> getOrdersByUserId();
+    List<OrderResponse> getOrdersByUserId(Long userId);
 
     OrderResponse getOrderByOrderId(Long orderId);
 
@@ -18,5 +18,5 @@ public interface OrderApi {
 
     OrderResponse addProductByOrder(Long productId, Long orderId);
 
-    OrderResponse changeStatus(Long orderId, Integer count);
+    OrderResponse changeStatus(Long orderId, Long goodId, Long count);
 }

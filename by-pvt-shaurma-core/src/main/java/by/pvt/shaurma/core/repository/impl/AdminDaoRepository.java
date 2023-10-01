@@ -1,34 +1,34 @@
 package by.pvt.shaurma.core.repository.impl;
 
-import by.pvt.shaurma.api.dto.UserRequest;
 import by.pvt.shaurma.core.config.HibernateJavaConfiguration;
+import by.pvt.shaurma.core.entity.Admin;
 import by.pvt.shaurma.core.entity.User;
-import by.pvt.shaurma.core.repository.UserDao;
+import by.pvt.shaurma.core.repository.AdminDao;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import java.util.List;
 
-public class UserDaoRepository implements UserDao {
+public class AdminDaoRepository implements AdminDao {
     private final SessionFactory sessionFactory;
 
-    public UserDaoRepository() {
+    public AdminDaoRepository() {
         this.sessionFactory = HibernateJavaConfiguration.getSessionFactory();
     }
 
     @Override
-    public void addUser(User user) {
+    public void addUser(Admin admin) {
         Session session = sessionFactory.openSession();
         session.getTransaction().begin();
-        session.persist(user);
+        session.persist(admin);
         session.getTransaction().commit();
         session.close();
     }
 
     @Override
-    public List<User> getAllUsers() {
+    public List<Admin> getAllAdmins() {
         Session session = sessionFactory.openSession();
-        List<User> clients = session.createQuery("select u from User u").getResultList();
+        List<Admin> clients = session.createQuery("select a from Admin a").getResultList();
         session.close();
         return clients;
     }
@@ -36,26 +36,25 @@ public class UserDaoRepository implements UserDao {
     @Override
     public void delete(Long id) {
         Session session = sessionFactory.openSession();
-        User user = session.get(User.class, id);
+        Admin admin = session.get(Admin.class, id);
         session.getTransaction().begin();
-        session.remove(user);
+        session.remove(admin);
         session.getTransaction().commit();
     }
 
     @Override
-    public void update(User user) {
+    public void update(Admin admin) {
         Session session = sessionFactory.openSession();
         session.getTransaction().begin();
-        session.update(user);
+        session.update(admin);
         session.getTransaction().commit();
         session.close();
     }
 
     @Override
-    public User getClientById(Long id) {
+    public Admin getAdminById(Long id) {
         Session session = sessionFactory.openSession();
-        User user = session.get(User.class, id);
-        return user;
+        Admin admin = session.get(Admin.class, id);
+        return admin;
     }
-
 }

@@ -1,56 +1,47 @@
 package by.pvt.shaurma.core.service;
 
-import by.pvt.shaurma.api.contract.BasketApi;
 import by.pvt.shaurma.api.contract.OrderApi;
 import by.pvt.shaurma.api.dto.OrderResponse;
-import by.pvt.shaurma.api.dto.UserRequest;
 import by.pvt.shaurma.core.entity.Client;
+import by.pvt.shaurma.core.entity.Good;
 import by.pvt.shaurma.core.entity.Order;
-import by.pvt.shaurma.core.entity.User;
-import by.pvt.shaurma.core.mapper.BasketMapper;
+import by.pvt.shaurma.core.mapper.ClientMapper;
 import by.pvt.shaurma.core.mapper.GoodMapper;
 import by.pvt.shaurma.core.mapper.OrderMapper;
-import by.pvt.shaurma.core.mapper.UserMapper;
+import by.pvt.shaurma.core.repository.ClientDao;
 import by.pvt.shaurma.core.repository.GoodDao;
 import by.pvt.shaurma.core.repository.OrderDao;
-import by.pvt.shaurma.core.repository.UserDao;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class OrderService implements OrderApi {
     private final GoodDao goodDao;
-    private final BasketApi basketApi;
     private final OrderDao orderDao;
     private final GoodMapper goodMapper;
     private final OrderMapper orderMapper;
-    private final BasketMapper basketMapper;
-    private final UserDao userDao;
-    private final UserMapper userMapper;
+    private final ClientDao clientDao;
+    private final ClientMapper clientMapper;
 
-    public OrderService(GoodDao goodDao, BasketApi basketApi, OrderDao orderDao, GoodMapper goodMapper, OrderMapper orderMapper, BasketMapper basketMapper, UserDao userDao, UserMapper userMapper) {
+
+    public OrderService(GoodDao goodDao, OrderDao orderDao, GoodMapper goodMapper, OrderMapper orderMapper, ClientDao clientDao, ClientMapper clientMapper) {
         this.goodDao = goodDao;
-        this.basketApi = basketApi;
         this.orderDao = orderDao;
         this.goodMapper = goodMapper;
         this.orderMapper = orderMapper;
-        this.basketMapper = basketMapper;
-        this.userDao = userDao;
-        this.userMapper = userMapper;
+        this.clientDao = clientDao;
+        this.clientMapper = clientMapper;
     }
 
     @Override
     public OrderResponse createOrder(Long userId) {
-        User user = userDao.getClientById(userId);
         Order order;
-        Optional<Order> findOrder =  orderDao.findOrderByUserId(userId).stream().filter(order1 -> order1.getStatus().equals("Не оформлен")).findFirst();
-        if(findOrder.isEmpty()) {
-            order = new Order(null, user, null, null, "Не оформлен", "Не оплачено");
+//        Optional<Order> findOrder = orderDao.findOrderByUserId(userId).stream().filter(order1 -> order1.getStatus().equals("Не оформлен")).findFirst();
+//        if(findOrder.isEmpty()) {
+            order = new Order(null, null, 0L, new BigDecimal(0), null, "Не оформлен", "Не оплачено");
             orderDao.addOrder(order);
-        }
-        else {
-            order = findOrder.get();
-        }
         return orderMapper.mapToOrderResponse(order);
     }
 
@@ -60,8 +51,8 @@ public class OrderService implements OrderApi {
     }
 
     @Override
-    public List<OrderResponse> getOrdersByUserId() {
-        return null;
+    public List<OrderResponse> getOrdersByUserId(Long userId) {
+        return orderDao.findOrderByUserId(userId).stream().map(orderMapper::mapToOrderResponse).collect(Collectors.toList());
     }
 
     @Override
@@ -71,16 +62,33 @@ public class OrderService implements OrderApi {
 
     @Override
     public OrderResponse deleteProductByOrder(Long productId, Long orderId) {
-        return null;
+        orderDao.deleteGoodInOrder(productId, orderId);
+        return orderMapper.mapToOrderResponse(orderDao.getOrderById(orderId));
     }
 
     @Override
     public OrderResponse addProductByOrder(Long productId, Long orderId) {
-        return null;
+        orderDao.addGoodInOrder(productId, orderId);
+        return orderMapper.mapToOrderResponse(orderDao.getOrderById(orderId));
     }
 
     @Override
-    public OrderResponse changeStatus(Long orderId, Integer count) {
-        return null;
+    public OrderResponse changeStatus(Long orderId, Long goodId, Long count) {
+        Order order = orderDao.getOrderById(orderId);
+        Good good = goodDao.getGoodById(goodId);
+        order.setCount(count);
+        order.setCost(good.getPrice().multiply(BigDecimal.valueOf(count)));
+        orderDao.update(order);
+        return orderMapper.mapToOrderResponse(order);
     }
+
+    public OrderResponse updateOrderToClient(Long userId, Long orderId) {
+        Client client = clientDao.getClientById(userId);
+        Order order = orderDao.getOrderById(orderId);
+        order.setUserId(client);
+        orderDao.update(order);
+        return orderMapper.mapToOrderResponse(orderDao.getOrderById(orderId));
+    }
+
+
 }

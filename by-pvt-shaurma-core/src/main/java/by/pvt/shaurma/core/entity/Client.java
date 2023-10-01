@@ -1,19 +1,21 @@
 package by.pvt.shaurma.core.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 @Table(schema = "shaurmasch", name ="client")
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @PrimaryKeyJoinColumn(name = "user_client_id")
+//@NamedEntityGraph(name = "client_entity-graph", attributeNodes = {@NamedAttributeNode("orders"), @NamedAttributeNode("comments")})
 public class Client extends User {
     @Column(name = "first_visit")
     private LocalDate firstVisit;
@@ -22,7 +24,17 @@ public class Client extends User {
     @Column(name = "telephone_number")
     private String telephone;
     @Column(name = "amount_spent")
-    private Double amountSpent;
+    private BigDecimal amountSpent;
     @OneToMany(mappedBy = "userId")
     private List<Order> orders;
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    private List<Comment> comments;
+
+    public Client(Long id, String name, String surname, String login, String password, String role, LocalDate firstVisit, LocalDate lastVisit, String telephone, BigDecimal amountSpent) {
+        super(id, name, surname, login, password, role);
+        this.firstVisit = firstVisit;
+        this.lastVisit = lastVisit;
+        this.telephone = telephone;
+        this.amountSpent = amountSpent;
+    }
 }

@@ -5,11 +5,15 @@ import lombok.*;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Table(schema = "shaurmasch", name ="order")
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class Order {
@@ -18,11 +22,13 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_order")
     @Column(name = "id")
     private Long id;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JoinColumn(name = "user_id")
-    private User userId;
+    private Client userId;
+    @Column(name = "count")
+    private Long count;
     @Column(name = "cost")
     private BigDecimal cost;
     @Column(name = "date")
@@ -31,12 +37,16 @@ public class Order {
     private String status;
     @Column(name = "payment", nullable = false)
     private String payment;
-    @ManyToMany(mappedBy = "orders")
-    private List<Good> goods;
+    @ManyToMany(cascade = CascadeType.REMOVE)
+    @JoinTable(schema = "shaurmasch", name = "cart",
+            joinColumns = {@JoinColumn(name = "order_id")},
+            inverseJoinColumns = {@JoinColumn(name = "good_id")})
+    private List<Good> goods = new ArrayList<>();
 
-    public Order(Long id, User userId, BigDecimal cost, LocalDate date, String status, String payment) {
+    public Order(Long id, Client userId, Long count, BigDecimal cost, LocalDate date, String status, String payment) {
         this.id = id;
         this.userId = userId;
+        this.count = count;
         this.cost = cost;
         this.date = date;
         this.status = status;

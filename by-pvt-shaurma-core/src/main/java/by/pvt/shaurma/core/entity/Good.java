@@ -1,8 +1,6 @@
 package by.pvt.shaurma.core.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -10,7 +8,9 @@ import java.util.List;
 
 @Table(schema = "shaurmasch", name ="good")
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class Good {
@@ -27,10 +27,9 @@ public class Good {
     private String description;
     @Column(name = "price")
     private BigDecimal price;
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(schema = "shaurmasch", name = "cart",
-            joinColumns = {@JoinColumn(name = "good_id")},
-            inverseJoinColumns = {@JoinColumn(name = "order_id")})
+    @ManyToMany(mappedBy = "goods", cascade = CascadeType.REMOVE)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Order> orders;
 
     public Good(String name, Long code, String description, BigDecimal price) {
