@@ -23,14 +23,24 @@ public class HibernateJavaConfiguration {
         properties.setProperty("hibernate.connection.username", "postgres");
         properties.setProperty("hibernate.connection.password", "sa");
         properties.setProperty("hibernate.show_sql", "true");
+        properties.setProperty("hibernate.cache.use_second_level_cache", "true");
+        properties.setProperty("hibernate.cache.use_query_cache", "true");
+        properties.setProperty("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.internal.EhcacheRegionFactory");
+        properties.setProperty("net.sf.ehcache.configurationResourceName", "META-INF/config/ehcache.xml");
 
         configuration = new Configuration();
         configuration.setProperties(properties);
         configuration.addAnnotatedClass(User.class);
-        configuration.addAnnotatedClass(Good.class);
+        configuration.addAnnotatedClass(Shawarma.class);
+        configuration.addAnnotatedClass(Burger.class);
+        configuration.addAnnotatedClass(Drink.class);
+        configuration.addAnnotatedClass(Ingridient.class);
         configuration.addAnnotatedClass(Order.class);
         configuration.addAnnotatedClass(Admin.class);
         configuration.addAnnotatedClass(Client.class);
+        configuration.addAnnotatedClass(BasketShawarma.class);
+        configuration.addAnnotatedClass(BasketBurger.class);
+        configuration.addAnnotatedClass(BasketDrink.class);
         configuration.addAnnotatedClass(Comment.class);
         serviceRegistryBuilder = new StandardServiceRegistryBuilder();
         serviceRegistryBuilder.applySettings(properties);

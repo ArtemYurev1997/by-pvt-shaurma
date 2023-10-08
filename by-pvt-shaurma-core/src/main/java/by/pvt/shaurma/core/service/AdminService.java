@@ -28,12 +28,7 @@ public class AdminService implements AdminApi {
 
     @Override
     public AdminResponse authorise(String login, String password) {
-        List<AdminResponse> admins = getAllAdmins();
-        AdminResponse adminResponse = admins.stream().filter(admin -> admin.getLogin().equals(login)).findFirst().orElseThrow(() -> new RuntimeException("Клиент с логином" + login + " не найден"));
-        if (!adminResponse.getPassword().equals(password)) {
-            throw new RuntimeException("Не верно введён пароль!");
-        }
-        return adminResponse;
+        return adminMapper.mapToAdminDto(adminDao.authorise(login, password));
     }
 
     @Override

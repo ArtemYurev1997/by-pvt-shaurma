@@ -20,5 +20,4 @@ public class OrderResponse {
     private LocalDate date;
     private String status;
     private String payment;
-    private List<GoodResponse> goods;
 }

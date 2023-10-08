@@ -1,59 +1,58 @@
 package by.pvt.shaurma.core.repository.impl;
 
-
 import by.pvt.shaurma.core.config.HibernateJavaConfiguration;
-import by.pvt.shaurma.core.entity.Good;
-import by.pvt.shaurma.core.repository.GoodDao;
+import by.pvt.shaurma.core.entity.Burger;
+import by.pvt.shaurma.core.repository.BurgerDao;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import java.util.List;
 
-public class GoodDaoRepository implements GoodDao {
+public class BurgerDaoRepository implements BurgerDao {
     private final SessionFactory sessionFactory;
 
-    public GoodDaoRepository() {
+    public BurgerDaoRepository() {
         this.sessionFactory = HibernateJavaConfiguration.getSessionFactory();
     }
 
     @Override
-    public List<Good> getAllGoods() {
+    public List<Burger> getAllBurgers() {
         Session session = sessionFactory.openSession();
-        List<Good> goods = session.createQuery("select g from Good g").getResultList();
+        List<Burger> burgers = session.createQuery("select b from Burger b").getResultList();
         session.close();
-        return goods;
+        return burgers;
     }
 
     @Override
-    public void deleteGood(Long id) {
+    public void deleteBurger(Long id) {
         Session session = sessionFactory.openSession();
-        Good good = session.get(Good.class, id);
+        Burger burger = session.get(Burger.class, id);
         session.getTransaction().begin();
-        session.remove(good);
-        session.getTransaction().commit();
-    }
-
-    @Override
-    public void addGood(Good good) {
-        Session session = sessionFactory.openSession();
-        session.getTransaction().begin();
-        session.persist(good);
+        session.remove(burger);
         session.getTransaction().commit();
         session.close();
     }
 
     @Override
-    public Good getGoodById(Long id) {
+    public void addBurger(Burger burger) {
         Session session = sessionFactory.openSession();
-        Good good = session.get(Good.class, id);
-        return good;
+        session.getTransaction().begin();
+        session.persist(burger);
+        session.getTransaction().commit();
+        session.close();
     }
 
     @Override
-    public void update(Good newGood) {
+    public Burger getBurgerById(Long id) {
+        Session session = sessionFactory.openSession();
+        return session.get(Burger.class, id);
+    }
+
+    @Override
+    public void update(Burger burger) {
         Session session = sessionFactory.openSession();
         session.getTransaction().begin();
-        session.update(newGood);
+        session.update(burger);
         session.getTransaction().commit();
         session.close();
     }

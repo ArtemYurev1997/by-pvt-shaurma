@@ -3,12 +3,9 @@ package by.pvt.shaurma.core.repository.impl;
 import by.pvt.shaurma.core.config.HibernateJavaConfiguration;
 import by.pvt.shaurma.core.entity.Client;
 import by.pvt.shaurma.core.repository.ClientDao;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.hibernate.*;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
-
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -18,6 +15,9 @@ import java.util.List;
 
 public class ClientDaoRepository implements ClientDao {
     private final SessionFactory sessionFactory;
+    private static Session session;
+    private static Transaction transaction;
+
 
     public ClientDaoRepository() {
         this.sessionFactory = HibernateJavaConfiguration.getSessionFactory();
@@ -25,7 +25,7 @@ public class ClientDaoRepository implements ClientDao {
 
     @Override
     public void addClient(Client client) {
-        Session session = sessionFactory.openSession();
+        session = sessionFactory.openSession();
         session.getTransaction().begin();
         session.persist(client);
         session.getTransaction().commit();
@@ -34,7 +34,7 @@ public class ClientDaoRepository implements ClientDao {
 
     @Override
     public List<Client> getAllClients() {
-        Session session = sessionFactory.openSession();
+        session = sessionFactory.openSession();
         List<Client> clients = session.createQuery("select c from Client c").getResultList();
         session.close();
         return clients;
@@ -42,7 +42,7 @@ public class ClientDaoRepository implements ClientDao {
 
     @Override
     public void delete(Long id) {
-        Session session = sessionFactory.openSession();
+        session = sessionFactory.openSession();
         Client client = session.get(Client.class, id);
         session.getTransaction().begin();
         session.remove(client);
@@ -51,7 +51,7 @@ public class ClientDaoRepository implements ClientDao {
 
     @Override
     public void update(Client client) {
-        Session session = sessionFactory.openSession();
+        session = sessionFactory.openSession();
         session.getTransaction().begin();
         session.update(client);
         session.getTransaction().commit();
@@ -60,8 +60,28 @@ public class ClientDaoRepository implements ClientDao {
 
     @Override
     public Client getClientById(Long id) {
-        Session session = sessionFactory.openSession();
+        session = sessionFactory.openSession();
         return session.get(Client.class, id);
+    }
+
+    public Client authorise(String login, String password) {
+        try{
+            session = sessionFactory.openSession();
+            transaction = session.beginTransaction();
+            Client client = (Client) session.createQuery("From Client where login = :login and password = :password").setParameter("login", login).setParameter("password", password).uniqueResult();
+            if(client != null){
+                return client;
+            }else{
+                return null;
+            }
+        }catch(HibernateException e){
+            transaction.rollback();
+            System.out.println("Transaction is rolled back.");
+            return null;
+        }
+        finally{
+            session.close();
+        }
     }
 
     public List<Client> findAllClientsWhereAmountSpentGreaterThan(BigDecimal amountSpent) {

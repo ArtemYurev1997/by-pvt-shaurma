@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Table(schema = "shaurmasch", name ="order")
 @Entity
@@ -37,11 +36,12 @@ public class Order {
     private String status;
     @Column(name = "payment", nullable = false)
     private String payment;
-    @ManyToMany(cascade = CascadeType.REMOVE)
-    @JoinTable(schema = "shaurmasch", name = "cart",
-            joinColumns = {@JoinColumn(name = "order_id")},
-            inverseJoinColumns = {@JoinColumn(name = "good_id")})
-    private List<Good> goods = new ArrayList<>();
+    @OneToMany(mappedBy = "order")
+    private List<BasketShawarma> shawarmaList = new ArrayList<>();
+    @OneToMany(mappedBy = "order")
+    private List<BasketBurger> burgerList = new ArrayList<>();
+    @OneToMany(mappedBy = "order")
+    private List<BasketDrink> drinkList = new ArrayList<>();
 
     public Order(Long id, Client userId, Long count, BigDecimal cost, LocalDate date, String status, String payment) {
         this.id = id;

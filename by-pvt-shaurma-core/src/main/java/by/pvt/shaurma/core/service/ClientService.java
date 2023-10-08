@@ -30,12 +30,7 @@ public class ClientService implements ClientApi {
 
     @Override
     public ClientResponse authorise(String login, String password) {
-        List<ClientResponse> clients = getAllClients();
-        ClientResponse clientResponse = clients.stream().filter(client -> client.getLogin().equals(login)).findFirst().orElseThrow(() -> new RuntimeException("Клиент с логином" + login + " не найден"));
-        if (!clientResponse.getPassword().equals(password)) {
-            throw new RuntimeException("Не верно введён пароль!");
-        }
-        return clientResponse;
+       return clientMapper.mapToClientDto(clientDao.authorise(login, password));
     }
 
     @Override

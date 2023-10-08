@@ -7,7 +7,7 @@ import by.pvt.shaurma.core.entity.Order;
 import java.util.stream.Collectors;
 
 public class OrderMapper {
-    GoodMapper goodMapper = new GoodMapper();
+
 
     public OrderResponse mapToOrderResponse(Order order){
         OrderResponse dto = new OrderResponse();
@@ -18,7 +18,6 @@ public class OrderMapper {
         dto.setDate(order.getDate());
         dto.setStatus(order.getStatus());
         dto.setPayment(order.getPayment());
-        dto.setGoods(order.getGoods().stream().map(goodMapper::mapToGoodDto).collect(Collectors.toList()));
         return dto;
     }
 

@@ -6,7 +6,9 @@ import by.pvt.shaurma.api.dto.UserRequest;
 import java.util.List;
 
 public interface OrderApi {
-    OrderResponse createOrder(Long userId);
+    OrderResponse createOrder();
+
+    OrderResponse updateOrderToClient(Long userId, Long orderId);
 
     OrderResponse checkOut();
 
@@ -14,9 +16,13 @@ public interface OrderApi {
 
     OrderResponse getOrderByOrderId(Long orderId);
 
-    OrderResponse deleteProductByOrder(Long productId, Long orderId);
+    OrderResponse deleteShawarmaByOrder(Long shawarmaId, Long orderId);
 
-    OrderResponse addProductByOrder(Long productId, Long orderId);
+    OrderResponse addShawarmaByOrder(Long shawarmaId, Long orderId);
 
-    OrderResponse changeStatus(Long orderId, Long goodId, Long count);
+    OrderResponse deleteBurgerByOrder(Long burgerId, Long orderId);
+
+    OrderResponse addBurgerByOrder(Long burgerId, Long orderId);
+
+    OrderResponse changeStatus(Long orderId);
 }
