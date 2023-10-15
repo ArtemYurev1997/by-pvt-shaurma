@@ -1,15 +1,20 @@
 package by.pvt.shaurma.core;
 
+import by.pvt.shaurma.core.config.HibernateJavaConfiguration;
 import by.pvt.shaurma.core.mapper.BasketMapper;
 import by.pvt.shaurma.core.mapper.ClientMapper;
 import by.pvt.shaurma.core.mapper.OrderMapper;
-import by.pvt.shaurma.core.repository.BasketDrinkDao;
 import by.pvt.shaurma.core.repository.impl.*;
 import by.pvt.shaurma.core.service.BasketService;
 import by.pvt.shaurma.core.service.OrderService;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+
+import java.math.BigDecimal;
 
 public class Main {
     public static void main(String[] args) {
+        SessionFactory sessionFactory = HibernateJavaConfiguration.getSessionFactory();
         ShawarmaDaoRepository shawarmaDaoRepository = new ShawarmaDaoRepository();
         BurgerDaoRepository burgerDaoRepository = new BurgerDaoRepository();
         OrderDaoRepository orderDaoRepository = new OrderDaoRepository();
@@ -22,7 +27,7 @@ public class Main {
         BasketMapper basketMapper = new BasketMapper();
 
 //        clientDaoRepository.addClient(new Client(null, "Антон", "Антонов", "Anton57", "1323", "Client", LocalDate.of(2023, 5, 26),
-//                LocalDate.of(2023, 9, 12), "+375334673368", new BigDecimal(37)));
+//                LocalDate.of(2023, 9, 12), "+375334673368", "Ленина 16-56", new BigDecimal(37)));
 //        adminDaoRepository.addUser(new Admin(null, "Артём", "Артёмов", "Artem1337", "1234", "Admin",  LocalDate.of(2023, 1, 21),  LocalDate.of(2023, 9, 26),
 //                "Менеджер", new BigDecimal(1500)));
 
@@ -72,21 +77,6 @@ public class Main {
 //        ingridientDaoRepository.addIngridient(ingridient13);
 //        ingridientDaoRepository.addIngridient(ingridient14);
 //
-//        Ingridient ingridient1 = ingridientDaoRepository.getIngridientById(1L);
-//        Ingridient ingridient2 = ingridientDaoRepository.getIngridientById(2L);
-//        Ingridient ingridient3 = ingridientDaoRepository.getIngridientById(3L);
-//        Ingridient ingridient4 = ingridientDaoRepository.getIngridientById(4L);
-//        Ingridient ingridient5 = ingridientDaoRepository.getIngridientById(5L);
-//        Ingridient ingridient6 = ingridientDaoRepository.getIngridientById(6L);
-//        Ingridient ingridient7 = ingridientDaoRepository.getIngridientById(7L);
-//        Ingridient ingridient8 = ingridientDaoRepository.getIngridientById(8L);
-//        Ingridient ingridient9 = ingridientDaoRepository.getIngridientById(9L);
-//        Ingridient ingridient10 = ingridientDaoRepository.getIngridientById(10L);
-//        Ingridient ingridient11 = ingridientDaoRepository.getIngridientById(11L);
-//        Ingridient ingridient12 = ingridientDaoRepository.getIngridientById(12L);
-//        Ingridient ingridient13 = ingridientDaoRepository.getIngridientById(13L);
-//        Ingridient ingridient14 = ingridientDaoRepository.getIngridientById(14L);
-//
 //        Shawarma shawarma1 = new Shawarma( "Классическая", 232424L, new BigDecimal(7),null);
 //        Shawarma shawarma2 = new Shawarma( "Мексика", 153542L, null, null);
 //        Shawarma shawarma3 = new Shawarma( "Бульбаш", 734457L, null, null);
@@ -112,7 +102,7 @@ public class Main {
 //        burgerDaoRepository.addBurger(burger1);
 //        burgerDaoRepository.addBurger(burger2);
 //        burgerDaoRepository.addBurger(burger3);
-
+//
 //        Drink drink1 = new Drink("Fanta", 142231L, new BigDecimal(2));
 //        Drink drink2 = new Drink("Sprite", 632756L, new BigDecimal(2));
 //        Drink drink3 = new Drink("Coca-Cola", 709453L, new BigDecimal(2));
@@ -124,10 +114,47 @@ public class Main {
 //        System.out.println(shawarmaDaoRepository.getShawarmaById(4L));
 
 //        System.out.println(orderService.createOrder());
-//        System.out.println(orderService.updateOrderToClient(1L, 2L));
+//        System.out.println(orderService.updateOrderToClient(1L, 1L));
 
 
-//        System.out.println(basketService.createEmptyBasket());
-//        System.out.println(basketService.createBasketWithShawarma( 2L, 1L, 3L, 1L, 3L));
+//        System.out.println(basketService.updateShawarmaToPrice(9L, new BigDecimal(8.5)));
+//        System.out.println(basketService.createBasketWithShawarma( 1L, 2L, 2L));
+//        System.out.println(basketService.updateBurgerToPrice(1L, new BigDecimal(5.5)));
+//        System.out.println(basketService.createBasketWithBurger( 1L, 1L, 2L));
+//        System.out.println(orderService.getOrderById(1L));
+//        System.out.println(basketService.deleteBasketWithShawarma(1L, 2L));
+//        System.out.println(basketShawarmaDaoRepository.totalPriceShawarma(1L));
+//        System.out.println(basketService.totalPriceAllBasketsForOrder(1L));
+//        System.out.println(basketService.totalCountAllBasketsForOrder(1L));
+//        Client client = new Client(1L, "Антон", "Антонов", "Anton57", "1323", "Client", LocalDate.of(2023, 5, 26),
+//                LocalDate.of(2023, 9, 12), "+375334673368", "Ленина 16-56", new BigDecimal(37));
+//        clientDaoRepository.update(client);
+//        System.out.println(orderService.checkOut(1L));
+
+//        IngridientDaoRepository ingridientDaoRepository = new IngridientDaoRepository();
+//        Ingridient ingridient1 = ingridientDaoRepository.getIngridientById(1L);
+//        Ingridient ingridient2 = ingridientDaoRepository.getIngridientById(2L);
+//        Ingridient ingridient3 = ingridientDaoRepository.getIngridientById(3L);
+//        Ingridient ingridient4 = ingridientDaoRepository.getIngridientById(4L);
+//        Ingridient ingridient5 = ingridientDaoRepository.getIngridientById(5L);
+//        Ingridient ingridient6 = ingridientDaoRepository.getIngridientById(6L);
+//        Ingridient ingridient7 = ingridientDaoRepository.getIngridientById(7L);
+//        Ingridient ingridient8 = ingridientDaoRepository.getIngridientById(8L);
+//        Ingridient ingridient9 = ingridientDaoRepository.getIngridientById(9L);
+//        Ingridient ingridient10 = ingridientDaoRepository.getIngridientById(10L);
+//        Ingridient ingridient11 = ingridientDaoRepository.getIngridientById(11L);
+//        Ingridient ingridient12 = ingridientDaoRepository.getIngridientById(12L);
+//        Ingridient ingridient13 = ingridientDaoRepository.getIngridientById(13L);
+//        Ingridient ingridient14 = ingridientDaoRepository.getIngridientById(14L);
+//       Shawarma shawarma= shawarmaDaoRepository.getShawarmaById(9L);
+//       shawarma.setIngridients(List.of(ingridient1, ingridient2, ingridient3, ingridient4, ingridient5, ingridient6, ingridient7, ingridient10, ingridient9, ingridient13));
+//       shawarmaDaoRepository.update(shawarma);
+//        System.out.println(shawarmaDaoRepository.getShawarmaById(9L));
+
+//        System.out.println(orderService.payment(new BigDecimal(37), 1L, 1L));
+
+        System.out.println(orderService.getShawarmaDtoForIngridient("Курица"));
+//        System.out.println(shawarmaDaoRepository.getShawarmasChicken("Курица"));
+
     }
 }

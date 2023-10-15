@@ -6,6 +6,7 @@ import by.pvt.shaurma.core.repository.BasketShawarmaDao;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class BasketShawarmaDaoRepository implements BasketShawarmaDao {
@@ -34,26 +35,26 @@ public class BasketShawarmaDaoRepository implements BasketShawarmaDao {
     }
 
     @Override
-    public void updateBasket(BasketShawarma basket) {
+    public void delete(Long orderId, Long shawarmaId) {
         Session session = sessionFactory.openSession();
-        session.getTransaction().begin();
-        session.update(basket);
-        session.getTransaction().commit();
-    }
-
-    @Override
-    public BasketShawarma getBasketById(Long id) {
-        Session session = sessionFactory.openSession();
-        BasketShawarma basket = session.get(BasketShawarma.class, id);
-        return basket;
-    }
-
-    @Override
-    public void delete(Long id) {
-        Session session = sessionFactory.openSession();
-        BasketShawarma basket = session.get(BasketShawarma.class, id);
+        BasketShawarma basket =  session.createQuery("select s from BasketShawarma s where s.id.orderId=:orderId and s.id.shawarmaId=:shawarmaId", BasketShawarma.class).setParameter("orderId", orderId).setParameter("shawarmaId", shawarmaId).getSingleResult();
         session.getTransaction().begin();
         session.remove(basket);
         session.getTransaction().commit();
+        session.close();
+    }
+
+    public BigDecimal totalPriceShawarma(Long orderId) {
+        Session session = sessionFactory.openSession();
+        BigDecimal price = session.createQuery("select sum(d.cost) from BasketShawarma d where d.id.orderId=:orderId", BigDecimal.class).setParameter("orderId", orderId).getSingleResult();
+        session.close();
+        return price;
+    }
+
+    public Long totalCountShawarma(Long orderId) {
+        Session session = sessionFactory.openSession();
+        Long count = session.createQuery("select sum(d.count) from BasketShawarma d where d.id.orderId=:orderId", Long.class).setParameter("orderId", orderId).getSingleResult();
+        session.close();
+        return count;
     }
 }

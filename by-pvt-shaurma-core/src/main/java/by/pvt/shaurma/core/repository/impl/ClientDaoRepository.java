@@ -64,26 +64,6 @@ public class ClientDaoRepository implements ClientDao {
         return session.get(Client.class, id);
     }
 
-    public Client authorise(String login, String password) {
-        try{
-            session = sessionFactory.openSession();
-            transaction = session.beginTransaction();
-            Client client = (Client) session.createQuery("From Client where login = :login and password = :password").setParameter("login", login).setParameter("password", password).uniqueResult();
-            if(client != null){
-                return client;
-            }else{
-                return null;
-            }
-        }catch(HibernateException e){
-            transaction.rollback();
-            System.out.println("Transaction is rolled back.");
-            return null;
-        }
-        finally{
-            session.close();
-        }
-    }
-
     public List<Client> findAllClientsWhereAmountSpentGreaterThan(BigDecimal amountSpent) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();

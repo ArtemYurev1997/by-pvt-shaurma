@@ -7,7 +7,7 @@ import by.pvt.shaurma.core.entity.Order;
 import java.util.stream.Collectors;
 
 public class OrderMapper {
-
+    BasketMapper basketMapper = new BasketMapper();
 
     public OrderResponse mapToOrderResponse(Order order){
         OrderResponse dto = new OrderResponse();
@@ -16,19 +16,14 @@ public class OrderMapper {
         dto.setCount(order.getCount());
         dto.setCost(order.getCost());
         dto.setDate(order.getDate());
+        dto.setAddress(order.getAddress());
+        dto.setTelephone(order.getTelephone());
+        dto.setComment(order.getComment());
         dto.setStatus(order.getStatus());
         dto.setPayment(order.getPayment());
-        return dto;
-    }
-
-    public Order mapToOrderEntity(OrderRequest orderRequest){
-        Order dto = new Order();
-        dto.setId(orderRequest.getId());
-        dto.setCount(orderRequest.getCount());
-        dto.setCost(orderRequest.getCost());
-        dto.setDate(orderRequest.getDate());
-        dto.setStatus(orderRequest.getStatus());
-        dto.setPayment(orderRequest.getPayment());
+        dto.setShawarmaList(order.getShawarmaList().stream().map(basketMapper::toBasketShawarmaDto).collect(Collectors.toList()));
+        dto.setBurgerList(order.getBurgerList().stream().map(basketMapper::toBasketBurgerDto).collect(Collectors.toList()));
+        dto.setDrinkList(order.getDrinkList().stream().map(basketMapper::toBasketDrinkDto).collect(Collectors.toList()));
         return dto;
     }
 }

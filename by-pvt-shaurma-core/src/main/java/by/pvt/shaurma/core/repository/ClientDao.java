@@ -16,8 +16,6 @@ public interface ClientDao  {
 
     Client getClientById(Long id);
 
-    Client authorise(String login, String password);
-
     List<Client> findAllClientsWhereAmountSpentGreaterThan(BigDecimal amountSpent);
 
     List<Client> findAllClientsByNameAndAmountSpent(String name, BigDecimal amountSpent);

@@ -22,8 +22,6 @@ public class Order {
     @Column(name = "id")
     private Long id;
     @ManyToOne(cascade = CascadeType.ALL)
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     @JoinColumn(name = "user_id")
     private Client userId;
     @Column(name = "count")
@@ -32,15 +30,27 @@ public class Order {
     private BigDecimal cost;
     @Column(name = "date")
     private LocalDate date;
+    @Column(name = "telephone_number")
+    private String telephone;
+    @Column(name = "address")
+    private String address;
+    @Column(name = "comment")
+    private String comment;
     @Column(name = "status", nullable = false)
     private String status;
     @Column(name = "payment", nullable = false)
     private String payment;
     @OneToMany(mappedBy = "order")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<BasketShawarma> shawarmaList = new ArrayList<>();
     @OneToMany(mappedBy = "order")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<BasketBurger> burgerList = new ArrayList<>();
     @OneToMany(mappedBy = "order")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<BasketDrink> drinkList = new ArrayList<>();
 
     public Order(Long id, Client userId, Long count, BigDecimal cost, LocalDate date, String status, String payment) {

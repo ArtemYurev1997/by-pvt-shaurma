@@ -1,19 +1,27 @@
 package by.pvt.shaurma.api.contract;
 
+import by.pvt.shaurma.api.dto.BasketBurgerDto;
+import by.pvt.shaurma.api.dto.BasketDrinkDto;
 import by.pvt.shaurma.api.dto.BasketDto;
+import by.pvt.shaurma.api.dto.BasketShawarmaDto;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 public interface BasketApi {
-    BasketDto addShawarmaInBasket(Long shawarmaId);
+    BasketDto createBasketWithShawarma(Long orderId, Long shawarmaId, Long count);
 
-    BasketDto deleteShawarmaInBasket(Long shawarmaId);
+    BasketDto createBasketWithBurger(Long orderId, Long burgerId, Long count);
 
-    BasketDto addBurgerInBasket(Long burgerId);
+    BasketDto createBasketWithDrink(Long orderId, Long drinkId, Long count);
 
-    BasketDto deleteBurgerInBasket(Long burgerId);
+    List<BasketShawarmaDto> deleteBasketWithShawarma(Long orderId, Long shawarmaId);
 
-    BasketDto addDrinkInBasket(Long drinkId);
+    List<BasketBurgerDto> deleteBasketWithBurger(Long orderId, Long burgerId);
 
-    BasketDto deleteDrinkInBasket(Long drinkId);
+    List<BasketDrinkDto> deleteBasketWithDrink(Long orderId, Long drinkId);
 
-    BasketDto createBasket(Long orderId, Long count);
+    BigDecimal totalPriceAllBasketsForOrder(Long orderId);
+
+    Long totalCountAllBasketsForOrder(Long orderId);
 }

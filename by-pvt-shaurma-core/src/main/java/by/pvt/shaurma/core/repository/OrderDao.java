@@ -20,14 +20,6 @@ public interface OrderDao {
 
     List<Order> findOrderByUserId(Long userId);
 
-    void addShawarmaInOrder(Long shawarmaId, Long orderId);
-
-    void deleteShawarmaInOrder(Long shawarmaId, Long orderId);
-
-    void addBurgerInOrder(Long burgerId, Long orderId);
-
-    void deleteBurgerInOrder(Long burgerId, Long orderId);
-
     List<Order> findAllOrdersWhereCostGreaterThan(BigDecimal cost);
 
     BigDecimal getSumCostOfGoodsInOrder();

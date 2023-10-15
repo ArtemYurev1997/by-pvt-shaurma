@@ -5,8 +5,6 @@ import by.pvt.shaurma.core.entity.*;
 import by.pvt.shaurma.core.repository.OrderDao;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.postgresql.core.Query;
-
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -67,58 +65,11 @@ public class OrderDaoRepository implements OrderDao {
     @Override
     public List<Order> findOrderByUserId(Long userId) {
         Session session = sessionFactory.openSession();
-        List<Order> orders = session.createQuery("select o from Order o where userId=:userId", Order.class).setParameter("userId", userId).getResultList();
+        List<Order> orders = session.createQuery("select o from Order o where o.userId=:userId", Order.class).setParameter("userId", userId).getResultList();
         session.close();
         return orders;
     }
 
-    public void addShawarmaInOrder(Long shawarmaId, Long orderId) {
-//        Session session = sessionFactory.openSession();
-//        session.beginTransaction();
-//        Shawarma shawarma = session.get(Shawarma.class, shawarmaId);
-//        Order order = session.get(Order.class, orderId);
-//        List<Shawarma> shawarmas = order.getShawarmas();
-//        shawarmas.add(shawarma);
-//        session.merge(order);
-//        session.getTransaction().commit();
-//        session.close();
-    }
-
-    public void addBurgerInOrder(Long burgerId, Long orderId) {
-//        Session session = sessionFactory.openSession();
-//        session.beginTransaction();
-//        Burger burger = session.get(Burger.class, burgerId);
-//        Order order = session.get(Order.class, orderId);
-//        List<Burger> burgers = order.getBurgers();
-//        burgers.add(burger);
-//        session.merge(order);
-//        session.getTransaction().commit();
-//        session.close();
-    }
-
-    public void deleteBurgerInOrder(Long burgerId, Long orderId) {
-//        Session session = sessionFactory.openSession();
-//        session.beginTransaction();
-//        Burger burger = session.get(Burger.class, burgerId);
-//        Order order = session.get(Order.class, orderId);
-//        List<Burger> burgers = order.getBurgers();
-//        burgers.remove(burger);
-//        session.merge(order);
-//        session.getTransaction().commit();
-//        session.close();
-    }
-
-    public void deleteShawarmaInOrder(Long shawarmaId, Long orderId) {
-//        Session session = sessionFactory.openSession();
-//        session.getTransaction().begin();
-//        Shawarma shawarma = session.get(Shawarma.class, shawarmaId);
-//        Order order = session.get(Order.class, orderId);
-//        List<Shawarma> shawarmas = order.getShawarmas();
-//        shawarmas.remove(shawarma);
-//        session.merge(order);
-//        session.getTransaction().commit();
-//        session.close();
-    }
 
     public void createShawarma(Long id, Long start, Long end) {
         Session session = sessionFactory.openSession();

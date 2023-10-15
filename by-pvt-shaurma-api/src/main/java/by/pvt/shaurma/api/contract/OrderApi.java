@@ -1,6 +1,7 @@
 package by.pvt.shaurma.api.contract;
 
 import by.pvt.shaurma.api.dto.OrderResponse;
+import by.pvt.shaurma.api.dto.ShawarmaDto;
 import by.pvt.shaurma.api.dto.UserRequest;
 
 import java.util.List;
@@ -10,19 +11,13 @@ public interface OrderApi {
 
     OrderResponse updateOrderToClient(Long userId, Long orderId);
 
-    OrderResponse checkOut();
+    OrderResponse checkOut(Long orderId);
 
     List<OrderResponse> getOrdersByUserId(Long userId);
 
-    OrderResponse getOrderByOrderId(Long orderId);
-
-    OrderResponse deleteShawarmaByOrder(Long shawarmaId, Long orderId);
-
-    OrderResponse addShawarmaByOrder(Long shawarmaId, Long orderId);
-
-    OrderResponse deleteBurgerByOrder(Long burgerId, Long orderId);
-
-    OrderResponse addBurgerByOrder(Long burgerId, Long orderId);
-
     OrderResponse changeStatus(Long orderId);
+
+    OrderResponse getOrderById(Long id);
+
+    List<ShawarmaDto>  getShawarmaDtoForIngridient(String name);
 }

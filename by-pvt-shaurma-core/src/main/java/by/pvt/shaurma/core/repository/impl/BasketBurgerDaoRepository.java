@@ -6,6 +6,7 @@ import by.pvt.shaurma.core.repository.BasketBurgerDao;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class BasketBurgerDaoRepository implements BasketBurgerDao {
@@ -34,26 +35,26 @@ public class BasketBurgerDaoRepository implements BasketBurgerDao {
     }
 
     @Override
-    public void updateBasket(BasketBurger basket) {
+    public void delete(Long orderId, Long burgerId) {
         Session session = sessionFactory.openSession();
-        session.getTransaction().begin();
-        session.update(basket);
-        session.getTransaction().commit();
-    }
-
-    @Override
-    public BasketBurger getBasketById(Long id) {
-        Session session = sessionFactory.openSession();
-        BasketBurger basket = session.get(BasketBurger.class, id);
-        return basket;
-    }
-
-    @Override
-    public void delete(Long id) {
-        Session session = sessionFactory.openSession();
-        BasketBurger basket = session.get(BasketBurger.class, id);
+        BasketBurger basket = (BasketBurger) session.createQuery("select b from BasketBurger b where b.id.orderId=:orderId and b.id.burgerId=:burgerId").setParameter("orderId", orderId).setParameter("burgerId", burgerId).getSingleResult();
         session.getTransaction().begin();
         session.remove(basket);
         session.getTransaction().commit();
+        session.close();
+    }
+
+    public BigDecimal totalPriceBurger(Long orderId) {
+        Session session = sessionFactory.openSession();
+        BigDecimal price = session.createQuery("select sum(d.cost) from BasketBurger d where d.id.orderId=:orderId", BigDecimal.class).setParameter("orderId", orderId).getSingleResult();
+        session.close();
+        return price;
+    }
+
+    public Long totalCountBurger(Long orderId) {
+        Session session = sessionFactory.openSession();
+        Long count = session.createQuery("select sum(d.count) from BasketBurger d where d.id.orderId=:orderId", Long.class).setParameter("orderId", orderId).getSingleResult();
+        session.close();
+        return count;
     }
 }

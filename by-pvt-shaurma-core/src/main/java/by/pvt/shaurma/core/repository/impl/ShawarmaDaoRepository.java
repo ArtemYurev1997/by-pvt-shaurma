@@ -20,7 +20,12 @@ public class ShawarmaDaoRepository implements ShawarmaDao {
     public List<Shawarma> getAllShawarmas() {
         Session session = sessionFactory.openSession();
         List<Shawarma> shawarmas = session.createQuery("select s from Shawarma s").getResultList();
-        session.close();
+        return shawarmas;
+    }
+
+    public List<Shawarma> getShawarmasChicken(String name) {
+        Session session = sessionFactory.openSession();
+        List<Shawarma> shawarmas = session.createQuery("select s from Shawarma s join s.ingridients i where i.name=:name").setParameter("name", name).getResultList();
         return shawarmas;
     }
 
@@ -53,7 +58,7 @@ public class ShawarmaDaoRepository implements ShawarmaDao {
     public void update(Shawarma shawarma) {
         Session session = sessionFactory.openSession();
         session.getTransaction().begin();
-        session.update(shawarma);
+        session.merge(shawarma);
         session.getTransaction().commit();
         session.close();
     }

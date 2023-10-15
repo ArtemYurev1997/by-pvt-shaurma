@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Table(schema = "shaurmasch", name ="ingridient")
 @Entity
@@ -23,6 +24,8 @@ public class Ingridient {
     private BigDecimal price;
     @Column(name = "total_count")
     private Long total;
+    @ManyToMany(mappedBy = "ingridients")
+    private List<Shawarma> shawarmas;
 
     public Ingridient(String name) {
         this.name = name;

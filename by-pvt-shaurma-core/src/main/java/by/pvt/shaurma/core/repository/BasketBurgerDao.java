@@ -2,6 +2,7 @@ package by.pvt.shaurma.core.repository;
 
 import by.pvt.shaurma.core.entity.BasketBurger;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface BasketBurgerDao {
@@ -9,9 +10,9 @@ public interface BasketBurgerDao {
 
     void add(BasketBurger basket);
 
-    void updateBasket(BasketBurger basket);
+    void delete(Long orderId, Long burgerId);
 
-    BasketBurger getBasketById(Long id);
+    BigDecimal totalPriceBurger(Long orderId);
 
-    void delete(Long id);
+    Long totalCountBurger(Long orderId);
 }

@@ -52,7 +52,7 @@ public class BurgerDaoRepository implements BurgerDao {
     public void update(Burger burger) {
         Session session = sessionFactory.openSession();
         session.getTransaction().begin();
-        session.update(burger);
+        session.merge(burger);
         session.getTransaction().commit();
         session.close();
     }
