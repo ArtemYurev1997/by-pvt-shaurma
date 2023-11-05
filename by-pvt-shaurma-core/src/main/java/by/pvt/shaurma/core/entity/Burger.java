@@ -3,7 +3,7 @@ package by.pvt.shaurma.core.entity;
 import lombok.*;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;

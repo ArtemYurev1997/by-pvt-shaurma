@@ -15,10 +15,4 @@ public interface ClientDao  {
     void update(Client client);
 
     Client getClientById(Long id);
-
-    List<Client> findAllClientsWhereAmountSpentGreaterThan(BigDecimal amountSpent);
-
-    List<Client> findAllClientsByNameAndAmountSpent(String name, BigDecimal amountSpent);
-
-    List<Client> findAllClientsByNameForDetach(String name);
 }

@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderResponse {
     private Long id;
-    private Long userId;
+    private ClientResponse userId;
     private Long count;
     private BigDecimal cost;
     private String address;

@@ -7,7 +7,6 @@ import by.pvt.shaurma.core.entity.Admin;
 import java.util.List;
 
 public interface AdminDao {
-    Admin authorise(String login, String password);
 
     void addUser(Admin admin);
 

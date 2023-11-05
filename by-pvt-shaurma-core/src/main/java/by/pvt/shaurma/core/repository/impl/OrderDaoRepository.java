@@ -1,32 +1,33 @@
 package by.pvt.shaurma.core.repository.impl;
 
-import by.pvt.shaurma.core.config.HibernateJavaConfiguration;
 import by.pvt.shaurma.core.entity.*;
 import by.pvt.shaurma.core.repository.OrderDao;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+@Repository
 public class OrderDaoRepository implements OrderDao {
-    private final SessionFactory sessionFactory;
+    @Autowired
+    private SessionFactory sessionFactory;
 
-    public OrderDaoRepository() {
-        this.sessionFactory = HibernateJavaConfiguration.getSessionFactory();
-    }
+//    public OrderDaoRepository() {
+//        this.sessionFactory = HibernateJavaConfiguration.getSessionFactory();
+//    }
 
     @Override
     public List<Order> getAllOrders() {
         Session session = sessionFactory.openSession();
-        List<Order> orders = session.createQuery("select o from Order o").getResultList();
-        session.close();
-        return orders;
+        return session.createQuery("select o from Order o", Order.class).getResultList();
     }
 
     @Override
@@ -45,12 +46,13 @@ public class OrderDaoRepository implements OrderDao {
     }
 
     @Override
-    public void addOrder(Order order) {
+    public Order addOrder(Order order) {
         Session session = sessionFactory.openSession();
         session.getTransaction().begin();
         session.persist(order);
         session.getTransaction().commit();
         session.close();
+        return order;
     }
 
     @Override
@@ -65,9 +67,7 @@ public class OrderDaoRepository implements OrderDao {
     @Override
     public List<Order> findOrderByUserId(Long userId) {
         Session session = sessionFactory.openSession();
-        List<Order> orders = session.createQuery("select o from Order o where o.userId=:userId", Order.class).setParameter("userId", userId).getResultList();
-        session.close();
-        return orders;
+         return session.createQuery("select o from Order o where o.userId=:userId", Order.class).setParameter("userId", userId).getResultList();
     }
 
 
@@ -75,8 +75,8 @@ public class OrderDaoRepository implements OrderDao {
         Session session = sessionFactory.openSession();
         session.getTransaction().begin();
         Shawarma shawarma= session.get(Shawarma.class, id);
-        List<Ingridient> ingridients = session.createQuery("select i from Ingridient i where i.id>=:start and i.id<=:end").setParameter("start", start).setParameter("end", end).getResultList();
-        int query = session.createQuery("update Ingridient i set i.total=i.total-:decrement where i.id>=:start and i.id<=:end").setParameter("decrement", 1L).setParameter("start", start).setParameter("end", end).executeUpdate();
+        List<Ingridient> ingridients = session.createQuery("select i from Ingridient i where i.id>=:start and i.id<=:end", Ingridient.class).setParameter("start", start).setParameter("end", end).getResultList();
+        int query = session.createQuery("update Ingridient i set i.total=i.total-:decrement where i.id>=:start and i.id<=:end", Integer.class).setParameter("decrement", 1L).setParameter("start", start).setParameter("end", end).executeUpdate();
         BigDecimal price = (BigDecimal) session.createQuery("select sum(i.price) from Ingridient i where i.id>=:start and i.id<=:end").setParameter("start", start).setParameter("end", end).getSingleResult();
         shawarma.setPrice(price);
         shawarma.setIngridients(ingridients);

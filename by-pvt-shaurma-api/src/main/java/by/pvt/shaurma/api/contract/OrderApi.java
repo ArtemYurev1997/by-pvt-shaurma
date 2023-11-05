@@ -1,17 +1,26 @@
 package by.pvt.shaurma.api.contract;
 
-import by.pvt.shaurma.api.dto.OrderResponse;
-import by.pvt.shaurma.api.dto.ShawarmaDto;
-import by.pvt.shaurma.api.dto.UserRequest;
+import by.pvt.shaurma.api.dto.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface OrderApi {
-    OrderResponse createOrder();
+    OrderResponse save(OrderRequest orderRequest);
+
+    void delete(Long id);
+
+    OrderResponse findById(Long id);
+
+    List<OrderResponse> getAll();
+
+    OrderResponse createOrder(OrderRequest orderRequest);
 
     OrderResponse updateOrderToClient(Long userId, Long orderId);
 
     OrderResponse checkOut(Long orderId);
+
+    OrderResponse payment(BigDecimal sum, Long orderId, Long userId);
 
     List<OrderResponse> getOrdersByUserId(Long userId);
 
@@ -19,5 +28,11 @@ public interface OrderApi {
 
     OrderResponse getOrderById(Long id);
 
-    List<ShawarmaDto>  getShawarmaDtoForIngridient(String name);
+    List<ShawarmaDto>  getShawarmaDtoByIngridient(String name);
+
+    List<BurgerDto> getBurgersDtoByIngridient(String name);
+
+    CommentResponse createCommentByClient(Long clientId, CommentRequest commentRequest);
+
+    ShawarmaDto createShawarma(Long id, Long start, Long end, String type, Long code);
 }

@@ -7,7 +7,9 @@ import by.pvt.shaurma.api.dto.BasketShawarmaDto;
 import by.pvt.shaurma.core.entity.BasketBurger;
 import by.pvt.shaurma.core.entity.BasketDrink;
 import by.pvt.shaurma.core.entity.BasketShawarma;
+import org.springframework.stereotype.Component;
 
+@Component
 public class BasketMapper {
     ShawarmaMapper shawarmaMapper = new ShawarmaMapper();
     BurgerMapper burgerMapper = new BurgerMapper();

@@ -1,44 +1,22 @@
 package by.pvt.shaurma.core.repository.impl;
 
-import by.pvt.shaurma.core.config.HibernateJavaConfiguration;
+
 import by.pvt.shaurma.core.entity.Admin;
-import by.pvt.shaurma.core.entity.Client;
 import by.pvt.shaurma.core.repository.AdminDao;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import java.util.List;
 
+@Repository
 public class AdminDaoRepository implements AdminDao {
-    private final SessionFactory sessionFactory;
-    private static Session session;
-    private static Transaction transaction;
+    @Autowired
+    private SessionFactory sessionFactory;
 
-    public AdminDaoRepository() {
-        this.sessionFactory = HibernateJavaConfiguration.getSessionFactory();
-    }
-
-    public Admin authorise(String login, String password) {
-        try{
-            session = sessionFactory.openSession();
-            transaction = session.beginTransaction();
-            Admin admin = (Admin) session.createQuery("From Client where login = :login and password = :password").setParameter("login", login).setParameter("password", password).uniqueResult();
-            if(admin != null){
-                return admin;
-            }else{
-                return null;
-            }
-        }catch(HibernateException e){
-            transaction.rollback();
-            System.out.println("Transaction is rolled back.");
-            return null;
-        }
-        finally{
-            session.close();
-        }
-    }
+//    public AdminDaoRepository() {
+//        this.sessionFactory = HibernateJavaConfiguration.getSessionFactory();
+//    }
 
     @Override
     public void addUser(Admin admin) {
@@ -52,9 +30,7 @@ public class AdminDaoRepository implements AdminDao {
     @Override
     public List<Admin> getAllAdmins() {
         Session session = sessionFactory.openSession();
-        List<Admin> clients = session.createQuery("select a from Admin a").getResultList();
-        session.close();
-        return clients;
+         return session.createQuery("select a from Admin a", Admin.class).getResultList();
     }
 
     @Override
@@ -71,7 +47,7 @@ public class AdminDaoRepository implements AdminDao {
     public void update(Admin admin) {
         Session session = sessionFactory.openSession();
         session.getTransaction().begin();
-        session.update(admin);
+        session.merge(admin);
         session.getTransaction().commit();
         session.close();
     }

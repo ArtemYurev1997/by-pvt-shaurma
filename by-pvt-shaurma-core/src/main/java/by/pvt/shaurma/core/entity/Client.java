@@ -2,7 +2,7 @@ package by.pvt.shaurma.core.entity;
 
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -26,11 +26,12 @@ public class Client extends User {
     private String address;
     @Column(name = "amount_spent")
     private BigDecimal amountSpent;
-    @OneToMany(mappedBy = "userId")
+    @OneToMany
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Order> orders;
     @OneToMany
+    @JoinColumn(name = "user_comment")
     private List<Comment> comments;
 
     public Client(Long id, String name, String surname, String login, String password, String role, LocalDate firstVisit, LocalDate lastVisit, String telephone, String address, BigDecimal amountSpent) {
@@ -42,18 +43,18 @@ public class Client extends User {
         this.amountSpent = amountSpent;
     }
 
-//    @Override
-//    public String toString() {
-//        return "Client{" + "name=" + getName() +
-//                ", surname=" + getSurname() +
-//                ", login=" + getLogin() +
-//                ", role=" + getRole() +
-//                ", firstVisit=" + firstVisit +
-//                ", lastVisit=" + lastVisit +
-//                ", telephone='" + telephone + '\'' +
-//                ", amountSpent=" + amountSpent +
-//                ", orders=" + orders +
-//                ", comments=" + comments +
-//                '}';
-//    }
+    @Override
+    public String toString() {
+        return "Client{" + "name=" + getName() +
+                ", surname=" + getSurname() +
+                ", login=" + getLogin() +
+                ", role=" + getRole() +
+                ", firstVisit=" + firstVisit +
+                ", lastVisit=" + lastVisit +
+                ", telephone='" + telephone + '\'' +
+                ", amountSpent=" + amountSpent +
+                ", orders=" + orders +
+                ", comments=" + comments +
+                '}';
+    }
 }

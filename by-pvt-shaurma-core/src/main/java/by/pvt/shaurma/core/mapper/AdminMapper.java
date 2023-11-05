@@ -3,7 +3,9 @@ package by.pvt.shaurma.core.mapper;
 import by.pvt.shaurma.api.dto.AdminRequest;
 import by.pvt.shaurma.api.dto.AdminResponse;
 import by.pvt.shaurma.core.entity.Admin;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AdminMapper {
     public AdminResponse mapToAdminDto(Admin admin) {
         AdminResponse dto = new AdminResponse();

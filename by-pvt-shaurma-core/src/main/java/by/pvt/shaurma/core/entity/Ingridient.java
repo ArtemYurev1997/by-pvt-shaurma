@@ -2,7 +2,7 @@ package by.pvt.shaurma.core.entity;
 
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class Ingridient {
     private BigDecimal price;
     @Column(name = "total_count")
     private Long total;
-    @ManyToMany(mappedBy = "ingridients")
+    @ManyToMany
     private List<Shawarma> shawarmas;
 
     public Ingridient(String name) {

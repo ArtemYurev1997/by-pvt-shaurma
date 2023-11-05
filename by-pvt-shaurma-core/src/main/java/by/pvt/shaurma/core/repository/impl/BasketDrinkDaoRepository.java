@@ -1,28 +1,28 @@
 package by.pvt.shaurma.core.repository.impl;
 
-import by.pvt.shaurma.core.config.HibernateJavaConfiguration;
 import by.pvt.shaurma.core.entity.BasketDrink;
 import by.pvt.shaurma.core.repository.BasketDrinkDao;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.util.List;
 
+@Repository
 public class BasketDrinkDaoRepository implements BasketDrinkDao {
-    private final SessionFactory sessionFactory;
+    @Autowired
+    private  SessionFactory sessionFactory;
 
-    public BasketDrinkDaoRepository() {
-        this.sessionFactory = HibernateJavaConfiguration.getSessionFactory();
-    }
+//    public BasketDrinkDaoRepository() {
+//        this.sessionFactory = HibernateJavaConfiguration.getSessionFactory();
+//    }
 
 
     @Override
     public List<BasketDrink> getAllBaskets() {
         Session session = sessionFactory.openSession();
-        List<BasketDrink> goods = session.createQuery("select b from BasketDrink b").getResultList();
-        session.close();
-        return goods;
+        return session.createQuery("select b from BasketDrink b", BasketDrink.class).getResultList();
     }
 
     @Override
@@ -37,7 +37,7 @@ public class BasketDrinkDaoRepository implements BasketDrinkDao {
     @Override
     public void delete(Long orderId, Long drinkId) {
         Session session = sessionFactory.openSession();
-        BasketDrink basket = (BasketDrink) session.createQuery("select d from BasketDrink d where d.id.orderId=:orderId and d.id.drinkId=:drinkId").setParameter("orderId", orderId).setParameter("drinkId", drinkId).getSingleResult();
+        BasketDrink basket =  session.createQuery("select d from BasketDrink d where d.id.orderId=:orderId and d.id.drinkId=:drinkId", BasketDrink.class).setParameter("orderId", orderId).setParameter("drinkId", drinkId).getSingleResult();
         session.getTransaction().begin();
         session.remove(basket);
         session.getTransaction().commit();

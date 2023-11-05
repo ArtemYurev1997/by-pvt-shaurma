@@ -1,32 +1,27 @@
 package by.pvt.shaurma.core.repository.impl;
 
-import by.pvt.shaurma.core.config.HibernateJavaConfiguration;
-import by.pvt.shaurma.core.entity.Burger;
 import by.pvt.shaurma.core.entity.Shawarma;
 import by.pvt.shaurma.core.repository.ShawarmaDao;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public class ShawarmaDaoRepository implements ShawarmaDao {
-    private final SessionFactory sessionFactory;
+    @Autowired
+    private SessionFactory sessionFactory;
 
-    public ShawarmaDaoRepository() {
-        this.sessionFactory = HibernateJavaConfiguration.getSessionFactory();
-    }
+//    public ShawarmaDaoRepository() {
+//        this.sessionFactory = HibernateJavaConfiguration.getSessionFactory();
+//    }
 
     @Override
     public List<Shawarma> getAllShawarmas() {
         Session session = sessionFactory.openSession();
-        List<Shawarma> shawarmas = session.createQuery("select s from Shawarma s").getResultList();
-        return shawarmas;
-    }
-
-    public List<Shawarma> getShawarmasChicken(String name) {
-        Session session = sessionFactory.openSession();
-        List<Shawarma> shawarmas = session.createQuery("select s from Shawarma s join s.ingridients i where i.name=:name").setParameter("name", name).getResultList();
-        return shawarmas;
+        return session.createQuery("select s from Shawarma s", Shawarma.class).getResultList();
     }
 
     @Override

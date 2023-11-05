@@ -1,17 +1,17 @@
 package by.pvt.shaurma.api.dto;
 
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class UserRequest {
-    private Long id;
+    @NotBlank(message = "Поле должно содержать имя")
     private String name;
+    @NotBlank(message = "Поле должно содержать фамилию")
     private String surname;
+    @NotBlank(message = "Поле должно содержать логин")
     private String login;
+    @NotBlank(message = "Поле должно содержать пароль")
     private String password;
     private String role;
 }

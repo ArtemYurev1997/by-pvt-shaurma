@@ -9,11 +9,17 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface BasketApi {
-    BasketDto createBasketWithShawarma(Long orderId, Long shawarmaId, Long count);
+    BasketShawarmaDto createBasketWithShawarma(Long orderId, Long shawarmaId, Long count);
 
-    BasketDto createBasketWithBurger(Long orderId, Long burgerId, Long count);
+    BasketBurgerDto createBasketWithBurger(Long orderId, Long burgerId, Long count);
 
-    BasketDto createBasketWithDrink(Long orderId, Long drinkId, Long count);
+    BasketDrinkDto createBasketWithDrink(Long orderId, Long drinkId, Long count);
+
+//    BasketDto createBasketWithShawarma(Long orderId, Long shawarmaId, Long count);
+//
+//    BasketDto createBasketWithBurger(Long orderId, Long burgerId, Long count);
+//
+//    BasketDto createBasketWithDrink(Long orderId, Long drinkId, Long count);
 
     List<BasketShawarmaDto> deleteBasketWithShawarma(Long orderId, Long shawarmaId);
 

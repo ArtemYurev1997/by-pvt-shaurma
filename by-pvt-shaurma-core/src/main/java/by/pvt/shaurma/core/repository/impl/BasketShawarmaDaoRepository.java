@@ -1,28 +1,28 @@
 package by.pvt.shaurma.core.repository.impl;
 
-import by.pvt.shaurma.core.config.HibernateJavaConfiguration;
 import by.pvt.shaurma.core.entity.BasketShawarma;
 import by.pvt.shaurma.core.repository.BasketShawarmaDao;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.util.List;
 
+@Repository
 public class BasketShawarmaDaoRepository implements BasketShawarmaDao {
-    private final SessionFactory sessionFactory;
+    @Autowired
+    private SessionFactory sessionFactory;
 
-    public BasketShawarmaDaoRepository() {
-        this.sessionFactory = HibernateJavaConfiguration.getSessionFactory();
-    }
+//    public BasketShawarmaDaoRepository() {
+//        this.sessionFactory = HibernateJavaConfiguration.getSessionFactory();
+//    }
 
 
     @Override
     public List<BasketShawarma> getAllBaskets() {
         Session session = sessionFactory.openSession();
-        List<BasketShawarma> goods = session.createQuery("select b from BasketShawarma b").getResultList();
-        session.close();
-        return goods;
+        return session.createQuery("select b from BasketShawarma b", BasketShawarma.class).getResultList();
     }
 
     @Override

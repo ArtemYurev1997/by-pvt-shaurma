@@ -3,7 +3,7 @@ package by.pvt.shaurma.core.entity;
 import lombok.*;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class Shawarma {
     private Long code;
     @Column(name = "price")
     private BigDecimal price;
-    @OneToMany(mappedBy = "shawarma")
+    @OneToMany
     private List<BasketShawarma> shawarmaList = new ArrayList<>();
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(schema = "shaurmasch", name = "shawarma_ingridient",
@@ -36,11 +36,10 @@ public class Shawarma {
             inverseJoinColumns = {@JoinColumn(name = "ingridient_id")})
     private List<Ingridient> ingridients= new ArrayList<>();
 
-    public Shawarma(String type, Long code, BigDecimal price, List<Ingridient> ingridients) {
+    public Shawarma(String type, Long code, BigDecimal price) {
         this.type = type;
         this.code = code;
         this.price = price;
-        this.ingridients = ingridients;
     }
 
     @Override

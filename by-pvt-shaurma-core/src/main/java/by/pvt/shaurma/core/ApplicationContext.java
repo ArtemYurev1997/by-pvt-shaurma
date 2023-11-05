@@ -13,6 +13,7 @@ import by.pvt.shaurma.core.service.AdminService;
 import by.pvt.shaurma.core.service.BasketService;
 import by.pvt.shaurma.core.service.ClientService;
 import by.pvt.shaurma.core.service.OrderService;
+import org.hibernate.SessionFactory;
 
 public class ApplicationContext {
     private static ApplicationContext applicationContext;
@@ -25,10 +26,12 @@ public class ApplicationContext {
 
     private final BasketApi basketService;
 
+    private static SessionFactory sessionFactory;
+
     public ApplicationContext() {
-        adminService = new AdminService(new AdminDaoRepository(), new AdminMapper());
-        clientService = new ClientService(new ClientDaoRepository(), new ClientMapper());
-        orderService = new OrderService(new OrderDaoRepository(), new OrderMapper(), new ClientDaoRepository(), new ClientMapper());
+        adminService = new AdminService(new AdminDaoRepository(), new AdminMapper(), sessionFactory);
+        clientService = new ClientService(new ClientDaoRepository(), new ClientMapper(), sessionFactory);
+        orderService = new OrderService(new OrderDaoRepository(), new OrderMapper(), new ClientDaoRepository(), new ClientMapper(), sessionFactory);
         basketService = new BasketService(new BasketShawarmaDaoRepository(), new BasketBurgerDaoRepository(), new BasketDrinkDaoRepository(), new OrderDaoRepository(),
                 new ShawarmaDaoRepository(), new BurgerDaoRepository(), new DrinkDaoRepository(), new BasketMapper());
     }

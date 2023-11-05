@@ -1,27 +1,27 @@
 package by.pvt.shaurma.core.repository.impl;
 
-import by.pvt.shaurma.core.config.HibernateJavaConfiguration;
 import by.pvt.shaurma.core.entity.Drink;
-import by.pvt.shaurma.core.entity.Shawarma;
 import by.pvt.shaurma.core.repository.DrinkDao;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public class DrinkDaoRepository implements DrinkDao {
-    private final SessionFactory sessionFactory;
+    @Autowired
+    private SessionFactory sessionFactory;
 
-    public DrinkDaoRepository() {
-        this.sessionFactory = HibernateJavaConfiguration.getSessionFactory();
-    }
+//    public DrinkDaoRepository() {
+//        this.sessionFactory = HibernateJavaConfiguration.getSessionFactory();
+//    }
 
     @Override
     public List<Drink> getAllDrinks() {
         Session session = sessionFactory.openSession();
-        List<Drink> drinks = session.createQuery("select d from Drink d").getResultList();
-        session.close();
-        return drinks;
+        return session.createQuery("select d from Drink d", Drink.class).getResultList();
     }
 
     @Override
@@ -53,7 +53,7 @@ public class DrinkDaoRepository implements DrinkDao {
     public void update(Drink drink) {
         Session session = sessionFactory.openSession();
         session.getTransaction().begin();
-        session.update(drink);
+        session.merge(drink);
         session.getTransaction().commit();
         session.close();
     }

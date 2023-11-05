@@ -15,6 +15,4 @@ public interface ShawarmaDao {
     Shawarma getShawarmaById(Long id);
 
     void update(Shawarma shawarma);
-
-    List<Shawarma> getShawarmasChicken(String name);
 }

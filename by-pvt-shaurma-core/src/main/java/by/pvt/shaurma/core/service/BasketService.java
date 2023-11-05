@@ -8,10 +8,13 @@ import by.pvt.shaurma.api.dto.BasketShawarmaDto;
 import by.pvt.shaurma.core.entity.*;
 import by.pvt.shaurma.core.mapper.BasketMapper;
 import by.pvt.shaurma.core.repository.*;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class BasketService implements BasketApi {
     private final BasketShawarmaDao basketShawarmaDao;
     private final BasketBurgerDao basketBurgerDao;
@@ -33,32 +36,31 @@ public class BasketService implements BasketApi {
         this.basketMapper = basketMapper;
     }
 
-
-    public BasketDto createBasketWithShawarma(Long orderId, Long shawarmaId, Long count) {
+    public BasketShawarmaDto createBasketWithShawarma(Long orderId, Long shawarmaId, Long count) {
         Order order = orderDao.getOrderById(orderId);
         Shawarma shawarma = shawarmaDao.getShawarmaById(shawarmaId);
         BasketShawarma basket = new BasketShawarma(order, shawarma, count);
         basket.setCost(shawarma.getPrice().multiply(BigDecimal.valueOf(count)));
         basketShawarmaDao.add(basket);
-        return basketMapper.mapToBasketShawarmaDto(basket);
+        return basketMapper.toBasketShawarmaDto(basket);
     }
 
-    public BasketDto createBasketWithBurger(Long orderId, Long burgerId, Long count) {
+    public BasketBurgerDto createBasketWithBurger(Long orderId, Long burgerId, Long count) {
         Order order = orderDao.getOrderById(orderId);
         Burger burger = burgerDao.getBurgerById(burgerId);
         BasketBurger basket = new BasketBurger(order, burger, count);
         basket.setCost(burger.getPrice().multiply(BigDecimal.valueOf(count)));
         basketBurgerDao.add(basket);
-        return basketMapper.mapToBasketBurgerDto(basket);
+        return basketMapper.toBasketBurgerDto(basket);
     }
 
-    public BasketDto createBasketWithDrink(Long orderId, Long drinkId, Long count) {
+    public BasketDrinkDto createBasketWithDrink(Long orderId, Long drinkId, Long count) {
         Order order = orderDao.getOrderById(orderId);
         Drink drink = drinkDao.getDrinkById(drinkId);
         BasketDrink basket = new BasketDrink(order, drink, count);
         basket.setCost(drink.getPrice().multiply(BigDecimal.valueOf(count)));
         basketDrinkDao.add(basket);
-        return basketMapper.mapToBasketDrinkDto(basket);
+        return basketMapper.toBasketDrinkDto(basket);
     }
 
     public List<BasketShawarmaDto> deleteBasketWithShawarma(Long orderId, Long shawarmaId) {

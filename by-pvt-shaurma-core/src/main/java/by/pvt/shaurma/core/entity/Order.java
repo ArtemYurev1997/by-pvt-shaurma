@@ -2,7 +2,7 @@ package by.pvt.shaurma.core.entity;
 
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,15 +40,15 @@ public class Order {
     private String status;
     @Column(name = "payment", nullable = false)
     private String payment;
-    @OneToMany(mappedBy = "order")
+    @OneToMany
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<BasketShawarma> shawarmaList = new ArrayList<>();
-    @OneToMany(mappedBy = "order")
+    @OneToMany
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<BasketBurger> burgerList = new ArrayList<>();
-    @OneToMany(mappedBy = "order")
+    @OneToMany
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<BasketDrink> drinkList = new ArrayList<>();
@@ -59,6 +59,19 @@ public class Order {
         this.count = count;
         this.cost = cost;
         this.date = date;
+        this.status = status;
+        this.payment = payment;
+    }
+
+    public Order(Long id, Client userId, Long count, BigDecimal cost, LocalDate date, String telephone, String address, String comment, String status, String payment) {
+        this.id = id;
+        this.userId = userId;
+        this.count = count;
+        this.cost = cost;
+        this.date = date;
+        this.telephone = telephone;
+        this.address = address;
+        this.comment = comment;
         this.status = status;
         this.payment = payment;
     }

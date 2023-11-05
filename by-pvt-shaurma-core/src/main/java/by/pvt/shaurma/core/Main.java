@@ -1,6 +1,5 @@
 package by.pvt.shaurma.core;
 
-import by.pvt.shaurma.core.config.HibernateJavaConfiguration;
 import by.pvt.shaurma.core.mapper.BasketMapper;
 import by.pvt.shaurma.core.mapper.ClientMapper;
 import by.pvt.shaurma.core.mapper.OrderMapper;
@@ -14,28 +13,28 @@ import java.math.BigDecimal;
 
 public class Main {
     public static void main(String[] args) {
-        SessionFactory sessionFactory = HibernateJavaConfiguration.getSessionFactory();
-        ShawarmaDaoRepository shawarmaDaoRepository = new ShawarmaDaoRepository();
-        BurgerDaoRepository burgerDaoRepository = new BurgerDaoRepository();
-        OrderDaoRepository orderDaoRepository = new OrderDaoRepository();
-        ClientDaoRepository clientDaoRepository = new ClientDaoRepository();
-        AdminDaoRepository adminDaoRepository = new AdminDaoRepository();
-        BasketShawarmaDaoRepository basketShawarmaDaoRepository = new BasketShawarmaDaoRepository();
-        BasketBurgerDaoRepository basketBurgerDaoRepository = new BasketBurgerDaoRepository();
-        BasketDrinkDaoRepository basketDrinkDaoRepository = new BasketDrinkDaoRepository();
-        DrinkDaoRepository drinkDaoRepository = new DrinkDaoRepository();
-        BasketMapper basketMapper = new BasketMapper();
+//        SessionFactory sessionFactory = HibernateJavaConfiguration.getSessionFactory();
+//        ShawarmaDaoRepository shawarmaDaoRepository = new ShawarmaDaoRepository();
+//        BurgerDaoRepository burgerDaoRepository = new BurgerDaoRepository();
+//        OrderDaoRepository orderDaoRepository = new OrderDaoRepository();
+//        ClientDaoRepository clientDaoRepository = new ClientDaoRepository();
+//        AdminDaoRepository adminDaoRepository = new AdminDaoRepository();
+//        BasketShawarmaDaoRepository basketShawarmaDaoRepository = new BasketShawarmaDaoRepository();
+//        BasketBurgerDaoRepository basketBurgerDaoRepository = new BasketBurgerDaoRepository();
+//        BasketDrinkDaoRepository basketDrinkDaoRepository = new BasketDrinkDaoRepository();
+//        DrinkDaoRepository drinkDaoRepository = new DrinkDaoRepository();
+//        BasketMapper basketMapper = new BasketMapper();
 
 //        clientDaoRepository.addClient(new Client(null, "Антон", "Антонов", "Anton57", "1323", "Client", LocalDate.of(2023, 5, 26),
 //                LocalDate.of(2023, 9, 12), "+375334673368", "Ленина 16-56", new BigDecimal(37)));
 //        adminDaoRepository.addUser(new Admin(null, "Артём", "Артёмов", "Artem1337", "1234", "Admin",  LocalDate.of(2023, 1, 21),  LocalDate.of(2023, 9, 26),
 //                "Менеджер", new BigDecimal(1500)));
 
-
-        OrderMapper orderMapper = new OrderMapper();
-        ClientMapper clientMapper = new ClientMapper();
-        OrderService orderService = new OrderService(orderDaoRepository, orderMapper, clientDaoRepository, clientMapper);
-        BasketService basketService = new BasketService(basketShawarmaDaoRepository, basketBurgerDaoRepository, basketDrinkDaoRepository, orderDaoRepository, shawarmaDaoRepository, burgerDaoRepository, drinkDaoRepository, basketMapper);
+//
+//        OrderMapper orderMapper = new OrderMapper();
+//        ClientMapper clientMapper = new ClientMapper();
+//        OrderService orderService = new OrderService(orderDaoRepository, orderMapper, clientDaoRepository, clientMapper);
+//        BasketService basketService = new BasketService(basketShawarmaDaoRepository, basketBurgerDaoRepository, basketDrinkDaoRepository, orderDaoRepository, shawarmaDaoRepository, burgerDaoRepository, drinkDaoRepository, basketMapper);
 //        System.out.println(basketService.createBasket(3L, 1L, 3L));
 //        System.out.println(basketService.createBasket(3L, 2L, 4L));
 //        System.out.println(basketService.addGoodInBasket(3L, 5L, 4L));
@@ -152,9 +151,7 @@ public class Main {
 //        System.out.println(shawarmaDaoRepository.getShawarmaById(9L));
 
 //        System.out.println(orderService.payment(new BigDecimal(37), 1L, 1L));
-
-        System.out.println(orderService.getShawarmaDtoForIngridient("Курица"));
-//        System.out.println(shawarmaDaoRepository.getShawarmasChicken("Курица"));
-
+//        System.out.println(orderService.getShawarmaDtoForIngridient("Курица"));
+//        System.out.println(orderService.createShawarma(8L, 1L, 6L));
     }
 }

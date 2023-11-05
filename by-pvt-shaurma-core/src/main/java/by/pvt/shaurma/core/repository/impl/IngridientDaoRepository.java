@@ -1,26 +1,27 @@
 package by.pvt.shaurma.core.repository.impl;
 
-import by.pvt.shaurma.core.config.HibernateJavaConfiguration;
 import by.pvt.shaurma.core.entity.Ingridient;
 import by.pvt.shaurma.core.repository.IngridientDao;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public class IngridientDaoRepository implements IngridientDao {
-    private final SessionFactory sessionFactory;
+    @Autowired
+    private SessionFactory sessionFactory;
 
-    public IngridientDaoRepository() {
-        this.sessionFactory = HibernateJavaConfiguration.getSessionFactory();
-    }
+//    public IngridientDaoRepository() {
+//        this.sessionFactory = HibernateJavaConfiguration.getSessionFactory();
+//    }
 
     @Override
     public List<Ingridient> getAllIngridients() {
         Session session = sessionFactory.openSession();
-        List<Ingridient> goods = session.createQuery("select i from Ingridient i").getResultList();
-        session.close();
-        return goods;
+        return session.createQuery("select i from Ingridient i", Ingridient.class).getResultList();
     }
 
     @Override
@@ -52,7 +53,7 @@ public class IngridientDaoRepository implements IngridientDao {
     public void update(Ingridient ingridient) {
         Session session = sessionFactory.openSession();
         session.getTransaction().begin();
-        session.update(ingridient);
+        session.merge(ingridient);
         session.getTransaction().commit();
         session.close();
     }

@@ -1,26 +1,27 @@
 package by.pvt.shaurma.core.repository.impl;
 
-import by.pvt.shaurma.core.config.HibernateJavaConfiguration;
 import by.pvt.shaurma.core.entity.Burger;
 import by.pvt.shaurma.core.repository.BurgerDao;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public class BurgerDaoRepository implements BurgerDao {
-    private final SessionFactory sessionFactory;
+    @Autowired
+    private  SessionFactory sessionFactory;
 
-    public BurgerDaoRepository() {
-        this.sessionFactory = HibernateJavaConfiguration.getSessionFactory();
-    }
+//    public BurgerDaoRepository() {
+//        this.sessionFactory = HibernateJavaConfiguration.getSessionFactory();
+//    }
 
     @Override
     public List<Burger> getAllBurgers() {
         Session session = sessionFactory.openSession();
-        List<Burger> burgers = session.createQuery("select b from Burger b").getResultList();
-        session.close();
-        return burgers;
+        return session.createQuery("select b from Burger b", Burger.class).getResultList();
     }
 
     @Override

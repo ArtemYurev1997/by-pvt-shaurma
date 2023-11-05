@@ -2,8 +2,9 @@ package by.pvt.shaurma.core.entity;
 
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Table(schema = "shaurmasch", name = "comment")
 @Entity
@@ -19,5 +20,5 @@ public class Comment {
     @Column(name = "commentary")
     private String comment;
     @Column(name = "date")
-    private LocalDate date;
+    private LocalDateTime date;
 }
