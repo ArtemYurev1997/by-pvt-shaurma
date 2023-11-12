@@ -1,5 +1,6 @@
 package by.pvt.shaurma.core.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import jakarta.persistence.*;
@@ -16,9 +17,16 @@ import java.time.LocalDateTime;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
     @Column(name = "commentary")
     private String comment;
     @Column(name = "date")
-    private LocalDateTime date;
+    private LocalDate date;
+    @OneToOne
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @JsonIgnore
+    @JoinColumn(name = "client_id")
+    private Client client;
 }

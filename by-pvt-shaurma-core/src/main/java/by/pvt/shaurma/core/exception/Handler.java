@@ -39,6 +39,15 @@ public class Handler {
         return errorResponse;
     }
 
+    @ExceptionHandler(value = ProgramException.class)
+    @ResponseBody
+    public ErrorResponse getProgramException(ProgramException e) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setMessage(e.getMessage());
+        errorResponse.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        return errorResponse;
+    }
+
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     @ResponseBody
     public ErrorResponse getValidationException(MethodArgumentNotValidException e) {

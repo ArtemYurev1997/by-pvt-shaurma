@@ -1,6 +1,7 @@
 package by.pvt.shaurma.api.contract;
 
 import by.pvt.shaurma.api.dto.*;
+import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -14,25 +15,25 @@ public interface OrderApi {
 
     List<OrderResponse> getAll();
 
+    Page<OrderResponse> getOrdersPages(int page, int size);
+
     OrderResponse createOrder(OrderRequest orderRequest);
 
-    OrderResponse updateOrderToClient(Long userId, Long orderId);
+    OrderResponse updateOrderToClient(OrderRequest orderRequest);
 
-    OrderResponse checkOut(Long orderId);
+    OrderResponse checkOut(OrderRequest orderRequest);
 
-    OrderResponse payment(BigDecimal sum, Long orderId, Long userId);
+    OrderResponse payment(OrderRequest orderRequest);
 
     List<OrderResponse> getOrdersByUserId(Long userId);
 
-    OrderResponse changeStatus(Long orderId);
+    OrderResponse changeStatus(OrderRequest orderRequest);
+
+    OrderResponse addCostAndCountToOrder(OrderRequest orderRequest);
 
     OrderResponse getOrderById(Long id);
 
-    List<ShawarmaDto>  getShawarmaDtoByIngridient(String name);
+    CommentResponse createCommentByClient(CommentRequest commentRequest);
 
-    List<BurgerDto> getBurgersDtoByIngridient(String name);
 
-    CommentResponse createCommentByClient(Long clientId, CommentRequest commentRequest);
-
-    ShawarmaDto createShawarma(Long id, Long start, Long end, String type, Long code);
 }

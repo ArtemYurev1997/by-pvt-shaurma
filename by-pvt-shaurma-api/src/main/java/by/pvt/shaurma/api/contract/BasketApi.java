@@ -15,12 +15,6 @@ public interface BasketApi {
 
     BasketDrinkDto createBasketWithDrink(Long orderId, Long drinkId, Long count);
 
-//    BasketDto createBasketWithShawarma(Long orderId, Long shawarmaId, Long count);
-//
-//    BasketDto createBasketWithBurger(Long orderId, Long burgerId, Long count);
-//
-//    BasketDto createBasketWithDrink(Long orderId, Long drinkId, Long count);
-
     List<BasketShawarmaDto> deleteBasketWithShawarma(Long orderId, Long shawarmaId);
 
     List<BasketBurgerDto> deleteBasketWithBurger(Long orderId, Long burgerId);

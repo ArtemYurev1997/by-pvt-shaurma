@@ -16,6 +16,6 @@ public class AdminRequest extends UserRequest{
     @NotBlank(message = "Поле должно содержать должность")
     private String post;
     @NotBlank(message = "Поле должно содержать значение зарплаты")
-    @PositiveOrZero
+    @PositiveOrZero(message = "")
     private BigDecimal salary;
 }

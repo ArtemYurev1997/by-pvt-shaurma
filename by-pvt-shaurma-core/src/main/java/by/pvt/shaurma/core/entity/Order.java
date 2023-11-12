@@ -1,5 +1,7 @@
 package by.pvt.shaurma.core.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import jakarta.persistence.*;
@@ -23,6 +25,7 @@ public class Order {
     private Long id;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     private Client userId;
     @Column(name = "count")
     private Long count;
@@ -40,17 +43,20 @@ public class Order {
     private String status;
     @Column(name = "payment", nullable = false)
     private String payment;
-    @OneToMany
+    @OneToMany(mappedBy = "order")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     private List<BasketShawarma> shawarmaList = new ArrayList<>();
-    @OneToMany
+    @OneToMany(mappedBy = "order")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     private List<BasketBurger> burgerList = new ArrayList<>();
-    @OneToMany
+    @OneToMany(mappedBy = "order")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     private List<BasketDrink> drinkList = new ArrayList<>();
 
     public Order(Long id, Client userId, Long count, BigDecimal cost, LocalDate date, String status, String payment) {

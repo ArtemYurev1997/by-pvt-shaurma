@@ -28,9 +28,9 @@ public class ClientServiceApi implements ClientApi {
         if(clientRequest.getName().equals("") | clientRequest.getSurname().equals("") | clientRequest.getLogin().equals("") | clientRequest.getPassword().equals("")) {
             throw new AccountException("Введите обязательные поля!");
         }
-//        else if(clientRequest.getLogin() != null) {
-//            throw new AccountException("Логин занят!");
-//        }
+        if(clientRequest.getLogin() != null) {
+            throw new AccountException("Логин занят!");
+        }
         Client client = clientMappers.toEntity(clientRequest);
         clientRepository.save(client);
         return clientMappers.toResponse(client);

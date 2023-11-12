@@ -1,5 +1,6 @@
 package by.pvt.shaurma.core.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import jakarta.persistence.*;
@@ -30,8 +31,10 @@ public class Client extends User {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Order> orders;
-    @OneToMany
-    @JoinColumn(name = "user_comment")
+    @OneToMany(mappedBy = "client")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private List<Comment> comments;
 
     public Client(Long id, String name, String surname, String login, String password, String role, LocalDate firstVisit, LocalDate lastVisit, String telephone, String address, BigDecimal amountSpent) {

@@ -4,6 +4,7 @@ import by.pvt.shaurma.api.contract.ClientApi;
 import by.pvt.shaurma.api.dto.ClientRequest;
 import by.pvt.shaurma.api.dto.ClientResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public class ClientController {
 
 
     @PostMapping("/update")
-    public List<ClientResponse> update(ClientRequest clientRequest) {
+    public List<ClientResponse> update(@Validated ClientRequest clientRequest) {
         return clientApi.update(clientRequest);
     }
 

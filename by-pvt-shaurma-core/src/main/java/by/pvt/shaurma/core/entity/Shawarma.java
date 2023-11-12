@@ -28,7 +28,7 @@ public class Shawarma {
     private Long code;
     @Column(name = "price")
     private BigDecimal price;
-    @OneToMany
+    @OneToMany(mappedBy = "shawarma")
     private List<BasketShawarma> shawarmaList = new ArrayList<>();
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(schema = "shaurmasch", name = "shawarma_ingridient",

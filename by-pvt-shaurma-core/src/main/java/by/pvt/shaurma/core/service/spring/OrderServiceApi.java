@@ -1,18 +1,26 @@
 package by.pvt.shaurma.core.service.spring;
 
+import by.pvt.shaurma.api.contract.BasketApi;
 import by.pvt.shaurma.api.contract.OrderApi;
 import by.pvt.shaurma.api.dto.*;
+import by.pvt.shaurma.api.enums.Status;
 import by.pvt.shaurma.core.entity.*;
 import by.pvt.shaurma.core.exception.PaymentException;
+import by.pvt.shaurma.core.exception.ProgramException;
 import by.pvt.shaurma.core.mapper.spring.*;
 import by.pvt.shaurma.core.repository.spring.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -23,13 +31,9 @@ public class OrderServiceApi implements OrderApi {
     private final OrderMappers orderMappers;
     private final ClientRepository clientRepository;
     private final ClientMappers clientMappers;
-    private final ShawarmaRepository shawarmaRepository;
-    private final ShawarmaMappers shawarmaMappers;
-    private final BurgerRepository burgerRepository;
-    private final BurgerMappers burgerMappers;
-    private final IngridientRepository ingridientRepository;
     private final CommentRepository commentRepository;
     private final CommentMappers commentMappers;
+    private final BasketApi basketApi;
 
     @Transactional
     public OrderResponse save(OrderRequest orderRequest) {
@@ -42,7 +46,16 @@ public class OrderServiceApi implements OrderApi {
     }
 
     public OrderResponse findById(Long id) {
-        return orderMappers.toResponse(orderRepository.findById(id).get());
+        Optional<Order> order = orderRepository.findById(id);
+        if (order.isPresent()) {
+            return orderMappers.toResponse(order.get());
+        }
+        else throw new ProgramException("Такого заказа не существует");
+    }
+
+    public Page<OrderResponse> getOrdersPages(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        return orderRepository.findAll(pageable).map(orderMappers::toResponse);
     }
 
     public List<OrderResponse> getAll() {
@@ -52,43 +65,60 @@ public class OrderServiceApi implements OrderApi {
     @Transactional
     @Override
     public OrderResponse createOrder(OrderRequest orderRequest) {
+        Order order;
         Client client = clientMappers.toEntity(orderRequest.getUserId());
-        Order order = new Order(null, client, 0L, new BigDecimal(0), null, null, null, null, "Не оформлено", "Не оплачено");
-        orderRepository.save(order);
+        Optional<Order> createOrder = orderRepository.getOrdersByUserId(client.getId()).stream().filter(order1 -> Objects.equals(order1.getStatus(), Status.UNFORMED.getName())).findFirst();
+        if(createOrder.isEmpty()) {
+            order = new Order(null, client, orderRequest.getCount(), orderRequest.getCost(), orderRequest.getDate(), orderRequest.getTelephone(), orderRequest.getAddress(), orderRequest.getComment(), Status.UNFORMED.getName(), orderRequest.getPayment());
+            orderRepository.save(order);
+            return orderMappers.toResponse(order);
+        }
+        else {
+            order = createOrder.get();
+        }
         return orderMappers.toResponse(order);
     }
 
     @Override
-    public OrderResponse updateOrderToClient(Long userId, Long orderId) {
-        Optional<Order> order = orderRepository.findById(orderId);
-        Optional<Client> client = clientRepository.findById(userId);
-        order.get().setUserId(client.get());
-        orderRepository.save(order.get());
+    public OrderResponse updateOrderToClient(OrderRequest orderRequest) {
+        Optional<Order> order = orderRepository.findById(orderRequest.getId());
+        Optional<Client> client = clientRepository.findById(orderRequest.getUserId().getId());
+        if(order.isPresent() && client.isPresent()) {
+            order.get().setUserId(client.get());
+            orderRepository.save(order.get());
+        }
+        else throw new ProgramException("Значения клиента и заказа не являются null!");
         return orderMappers.toResponse(order.get());
     }
 
     @Override
-    public OrderResponse checkOut(Long orderId) {
-        Optional<Order> order = orderRepository.findById(orderId);
-        Client user = order.get().getUserId();
-        order.get().setDate(LocalDate.now());
-        order.get().setTelephone(user.getTelephone());
-        order.get().setAddress(user.getAddress());
-        order.get().setComment(user.getComments().toString());
-        order.get().setPayment("Заказ оплачен!");
-        order.get().setStatus("Заказ подтвержден!");
-        orderRepository.save(order.get());
+    public OrderResponse checkOut(OrderRequest orderRequest) {
+        Optional<Order> order = orderRepository.findById(orderRequest.getId());
+        if(order.isPresent()) {
+            Client user = order.get().getUserId();
+            order.get().setDate(LocalDate.now());
+            order.get().setTelephone(user.getTelephone());
+            order.get().setAddress(user.getAddress());
+            order.get().setComment(user.getComments().toString());
+            order.get().setPayment(Status.PAY.getName());
+            order.get().setStatus(Status.DONE.getName());
+            orderRepository.save(order.get());
+        }
+        else throw new ProgramException("Значения клиента и заказа не являются null!");
         return orderMappers.toResponse(order.get());
     }
 
     @Transactional
     @Override
-    public OrderResponse payment(BigDecimal sum, Long orderId, Long userId) {
+    public OrderResponse payment(OrderRequest orderRequest) {
+        Long orderId = orderRequest.getId();
+        Long userId = orderRequest.getUserId().getId();
+        BigDecimal sum = orderRequest.getCost();
         BigDecimal cost = orderRepository.getCostOfOrder(orderId, userId);
         int result = sum.compareTo(cost);
         if (result == 0) {
             System.out.println("Оплата прошла успешно! Заказ Оформлен!");
-            return checkOut(orderId);
+            return checkOut(orderRequest);
         }
         else {
             throw new PaymentException("Введите нужную сумму!");
@@ -101,10 +131,26 @@ public class OrderServiceApi implements OrderApi {
     }
 
     @Override
-    public OrderResponse changeStatus(Long orderId) {
+    public OrderResponse changeStatus(OrderRequest orderRequest) {
+        Long orderId = orderRequest.getId();
         Optional<Order> order = orderRepository.findById(orderId);
-        order.get().setStatus("Оформлен");
-        orderRepository.save(order.get());
+        if(order.isPresent()) {
+            order.get().setStatus(orderRequest.getStatus());
+            orderRepository.save(order.get());
+        }
+        else throw new ProgramException("Значения клиента и заказа не являются null!");
+        return orderMappers.toResponse(order.get());
+    }
+
+    public OrderResponse addCostAndCountToOrder(OrderRequest orderRequest) {
+        Optional<Order> order = orderRepository.findById(orderRequest.getId());
+        if(order.isPresent()) {
+            order.get().setCost(basketApi.totalPriceAllBasketsForOrder(orderRequest.getId()));
+            order.get().setCount(basketApi.totalCountAllBasketsForOrder(orderRequest.getId()));
+            order.get().setStatus(Status.WAITING.getName());
+            orderRepository.save(order.get());
+        }
+        else throw new ProgramException("Значения клиента и заказа не являются null!");
         return orderMappers.toResponse(order.get());
     }
 
@@ -113,37 +159,21 @@ public class OrderServiceApi implements OrderApi {
         return orderMappers.toResponse(orderRepository.findById(id).get());
     }
 
-    @Override
-    public List<ShawarmaDto> getShawarmaDtoByIngridient(String name) {
-         return shawarmaRepository.getShawarmasByIngridientName(name).stream().map(shawarmaMappers::toDto).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<BurgerDto> getBurgersDtoByIngridient(String name) {
-        return burgerRepository.getBurgersByIngridientName(name).stream().map(burgerMappers::toDto).collect(Collectors.toList());
-    }
-
     @Transactional
-    public CommentResponse createCommentByClient(Long clientId, CommentRequest commentRequest) {
-        Optional<Client> client = clientRepository.findById(clientId);
-        Comment comment = new Comment(null, commentRequest.getComment(), commentRequest.getDate());
+    public CommentResponse createCommentByClient(CommentRequest commentRequest) {
+        Optional<Client> clientId = clientRepository.findById(commentRequest.getClientId());
+        Comment comment = null;
+        if(clientId.isPresent()) {
+            comment = new Comment(null, commentRequest.getComment(), LocalDate.now(), clientId.get());
+        }
         Comment saveComment = commentRepository.save(comment);
-        List<Comment> commentList = client.get().getComments();
-        commentList.add(saveComment);
-        client.get().setComments(commentList);
-        clientRepository.save(client.get());
-        return commentMappers.toResponse(comment);
-    }
-
-    @Transactional
-    public ShawarmaDto createShawarma(Long id, Long start, Long end, String type, Long code) {
-        Shawarma shawarma = new Shawarma(type, code, new BigDecimal(0));
-        Shawarma saveShawarma = shawarmaRepository.save(shawarma);
-        List<Ingridient> ingridientList = ingridientRepository.selectIngridientsForCreate(start, end);
-        ingridientRepository.updateCountIngridients(1L, start, end);
-        BigDecimal price = ingridientRepository.getSumOfIngridients(start, end);
-        saveShawarma.setPrice(price);
-        saveShawarma.setIngridients(ingridientList);
-        return shawarmaMappers.toDto(shawarmaRepository.save(saveShawarma));
+        Optional<Client> client = clientRepository.findById(saveComment.getClient().getId());
+        if(client.isPresent()) {
+            List<Comment> commentList = client.get().getComments();
+            commentList.add(saveComment);
+            client.get().setComments(commentList);
+            clientRepository.save(client.get());
+        }
+        return commentMappers.toResponse(saveComment);
     }
 }
