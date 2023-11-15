@@ -16,6 +16,8 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.*;
@@ -51,11 +53,31 @@ public class AdminService implements AdminApi {
     }
 
     @Override
-    public AdminResponse authorise(String login, String password) {
+    public UserDetails loadUserByUserName(String login) throws UsernameNotFoundException {
         try{
             session = sessionFactory.openSession();
             transaction = session.beginTransaction();
-            Admin admin = session.createQuery("From Admin where login = :login and password = :password", Admin.class).setParameter("login", login).setParameter("password", password).uniqueResult();
+            Admin admin = session.createQuery("From Admin where login = :login", Admin.class).setParameter("login", login).getSingleResult();
+            if(admin != null){
+                return admin;
+            }else{
+                throw new AccountException("Пользователь не найден!");
+            }
+        }catch(HibernateException e){
+            transaction.rollback();
+            throw new TransactionException("Транзакция отклонена!");
+        }
+        finally{
+            session.close();
+        }
+    }
+
+    @Override
+    public AdminResponse authorise(AdminRequest adminRequest) {
+        try{
+            session = sessionFactory.openSession();
+            transaction = session.beginTransaction();
+            Admin admin = session.createQuery("From Admin where login = :login and password = :password", Admin.class).setParameter("login", adminRequest.getLogin()).setParameter("password", adminRequest.getPassword()).uniqueResult();
             if(admin != null){
                 return adminMapper.mapToAdminDto(admin);
             }else{

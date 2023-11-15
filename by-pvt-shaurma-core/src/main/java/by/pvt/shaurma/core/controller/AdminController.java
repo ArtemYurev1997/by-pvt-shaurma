@@ -3,7 +3,10 @@ package by.pvt.shaurma.core.controller;
 import by.pvt.shaurma.api.contract.AdminApi;
 import by.pvt.shaurma.api.dto.AdminRequest;
 import by.pvt.shaurma.api.dto.AdminResponse;
+import jakarta.servlet.ServletException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,18 +26,18 @@ public class AdminController {
     }
 
     @PostMapping("/add")
-    public AdminResponse add(@RequestBody AdminRequest adminRequest) {
+    public AdminResponse add(@RequestBody @Validated AdminRequest adminRequest) {
         return adminApi.register(adminRequest);
     }
 
-    @PostMapping("/delete")
-    public void delete(Long id) {
+    @DeleteMapping("/delete/{id}")
+    public void delete(@PathVariable("id") Long id) {
         adminApi.delete(id);
     }
 
 
     @PostMapping("/update")
-    public List<AdminResponse> update(AdminRequest adminRequest) {
+    public List<AdminResponse> update(@RequestBody AdminRequest adminRequest) {
         return adminApi.update(adminRequest);
     }
 
@@ -44,9 +47,7 @@ public class AdminController {
     }
 
     @PostMapping("/authorise")
-    public AdminResponse authorise(@RequestBody AdminRequest adminRequest) {
-        String login = adminRequest.getLogin();
-        String password = adminRequest.getPassword();
-        return adminApi.authorise(login, password);
+    public AdminResponse authorise(@RequestBody AdminRequest adminRequest) throws ServletException {
+        return adminApi.authorise(adminRequest);
     }
 }

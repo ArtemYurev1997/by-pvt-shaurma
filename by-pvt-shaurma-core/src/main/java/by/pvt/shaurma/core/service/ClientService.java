@@ -9,6 +9,8 @@ import by.pvt.shaurma.core.exception.TransactionException;
 import by.pvt.shaurma.core.mapper.ClientMapper;
 import by.pvt.shaurma.core.repository.ClientDao;
 import org.hibernate.*;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,6 +60,26 @@ public class ClientService implements ClientApi {
             finally{
                 session.close();
             }
+    }
+
+    @Override
+    public UserDetails loadUserByUserName(String login) throws UsernameNotFoundException {
+        try{
+            session = sessionFactory.openSession();
+            transaction = session.beginTransaction();
+            Client client = session.createQuery("From Client where login = :login", Client.class).setParameter("login", login).getSingleResult();
+            if(client != null){
+                return client;
+            }else{
+                throw new AccountException("Пользователь не найден!");
+            }
+        }catch(HibernateException e){
+            transaction.rollback();
+            throw new TransactionException("Транзакция отклонена!");
+        }
+        finally{
+            session.close();
+        }
     }
 
     @Override

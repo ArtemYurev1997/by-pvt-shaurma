@@ -8,6 +8,9 @@ import by.pvt.shaurma.core.exception.AccountException;
 import by.pvt.shaurma.core.mapper.spring.ClientMappers;
 import by.pvt.shaurma.core.repository.spring.ClientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Primary
 public class ClientServiceApi implements ClientApi {
     private final ClientRepository clientRepository;
     private final ClientMappers clientMappers;
@@ -44,6 +48,11 @@ public class ClientServiceApi implements ClientApi {
             throw new AccountException("Пользователь не найден!");
         }
         return clientMappers.toResponse(client);
+    }
+
+    @Override
+    public UserDetails loadUserByUserName(String login) throws UsernameNotFoundException {
+        return clientRepository.loadUserByUserName(login);
     }
 
     @Transactional

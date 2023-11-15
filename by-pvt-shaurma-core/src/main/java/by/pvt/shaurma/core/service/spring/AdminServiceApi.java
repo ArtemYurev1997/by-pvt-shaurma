@@ -7,7 +7,14 @@ import by.pvt.shaurma.core.entity.Admin;
 import by.pvt.shaurma.core.exception.AccountException;
 import by.pvt.shaurma.core.mapper.spring.AdminMappers;
 import by.pvt.shaurma.core.repository.spring.AdminRepository;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,33 +24,43 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Primary
 public class AdminServiceApi implements AdminApi {
     private final AdminRepository adminRepository;
     private final AdminMappers adminMapper;
+    private final PasswordEncoder passwordEncoder;
+    private HttpServletRequest httpServletRequest;
 
     @Transactional
+//    @Secured({"ADMIN"})
     @Override
     public AdminResponse register(AdminRequest adminRequest) {
-        if(adminRequest.getName().equals("") | adminRequest.getSurname().equals("") | adminRequest.getLogin().equals("") | adminRequest.getPassword().equals("")) {
-            throw new AccountException("Введите обязательные поля!");
-        }
-        else if(adminRequest.getLogin() != null) {
+        if(adminRequest.getLogin() != null) {
             throw new AccountException("Логин занят!");
         }
         Admin admin = adminMapper.toEntity(adminRequest);
+        String password = passwordEncoder.encode(adminRequest.getPassword());
+        admin.setPassword(password);
         adminRepository.save(admin);
         return adminMapper.toResponse(admin);
     }
 
+    @Override
+    public UserDetails loadUserByUserName(String login) throws UsernameNotFoundException {
+        return adminRepository.loadUserByUserName(login);
+    }
+
     @Transactional
     @Override
-    public AdminResponse authorise(String login, String password) {
-        Admin admin = adminRepository.authorise(login, password);
-        if(admin != null){
-            return adminMapper.toResponse(admin);
-        } else {
-            throw new AccountException("Пользователь не найден!");
-        }
+    public AdminResponse authorise(AdminRequest adminRequest) throws ServletException {
+        httpServletRequest.login(adminRequest.getLogin(), adminRequest.getPassword());
+//        Admin admin = adminRepository.authorise(adminRequest.getLogin(), adminRequest.getPassword());
+//        if(admin != null){
+//            return adminMapper.toResponse(admin);
+//        } else {
+//            throw new AccountException("Пользователь не найден!");
+//        }
+        return new AdminResponse();
     }
 
     @Transactional
@@ -52,6 +69,7 @@ public class AdminServiceApi implements AdminApi {
         adminRepository.deleteById(id);
     }
 
+    @Secured({"ADMIN"})
     @Override
     public List<AdminResponse> getAllAdmins() {
         return adminRepository.findAll().stream().map(adminMapper::toResponse).collect(Collectors.toList());
@@ -65,7 +83,12 @@ public class AdminServiceApi implements AdminApi {
 
     @Override
     public List<AdminResponse> update(AdminRequest adminRequest) {
-        AdminResponse admin =adminMapper.toResponse(adminRepository.save(adminMapper.toEntity(adminRequest)));
+        Optional<Admin> admin = adminRepository.findById(adminRequest.getId());
+        String password = passwordEncoder.encode(adminRequest.getPassword());
+        if (admin.isPresent()) {
+            admin.get().setPassword(password);
+            adminRepository.save(admin.get());
+        }
         return getAllAdmins();
     }
 }

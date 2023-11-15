@@ -1,6 +1,7 @@
 package by.pvt.shaurma.api.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
@@ -9,13 +10,12 @@ import java.time.LocalDate;
 
 @Data
 public class AdminRequest extends UserRequest{
-    @NotBlank(message = "Поле должно содержать дату входа")
+    @NotNull(message = "Поле должно содержать дату входа")
     private LocalDate dateEnter;
-    @NotBlank(message = "Поле должно содержать дату выхода")
     private LocalDate dateExit;
     @NotBlank(message = "Поле должно содержать должность")
     private String post;
-    @NotBlank(message = "Поле должно содержать значение зарплаты")
-    @PositiveOrZero(message = "")
+    @NotNull(message = "Поле должно содержать значение зарплаты")
+    @PositiveOrZero(message = "Не отрицательное значение")
     private BigDecimal salary;
 }
