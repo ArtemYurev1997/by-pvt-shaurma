@@ -17,6 +17,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class AdminService implements AdminApi {
+public class AdminService implements AdminApi, UserDetailsService {
     private final AdminDao adminDao;
     private final AdminMapper adminMapper;
     private final SessionFactory sessionFactory;
@@ -53,7 +54,7 @@ public class AdminService implements AdminApi {
     }
 
     @Override
-    public UserDetails loadUserByUserName(String login) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         try{
             session = sessionFactory.openSession();
             transaction = session.beginTransaction();

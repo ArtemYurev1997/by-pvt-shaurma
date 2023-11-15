@@ -12,7 +12,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,12 +26,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Primary
-public class AdminServiceApi implements AdminApi {
+//@Primary
+public class AdminServiceApi implements AdminApi, UserDetailsService {
     private final AdminRepository adminRepository;
     private final AdminMappers adminMapper;
     private final PasswordEncoder passwordEncoder;
-    private HttpServletRequest httpServletRequest;
+    private final HttpServletRequest httpServletRequest;
 
     @Transactional
 //    @Secured({"ADMIN"})
@@ -46,21 +48,28 @@ public class AdminServiceApi implements AdminApi {
     }
 
     @Override
-    public UserDetails loadUserByUserName(String login) throws UsernameNotFoundException {
-        return adminRepository.loadUserByUserName(login);
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+        Admin adminResponse = adminRepository.loadUserByUserName(login);
+        UserDetails admin = User.builder()
+                .username(adminResponse.getLogin())
+                .password(adminResponse.getPassword())
+                .roles(adminResponse.getRole())
+                .build();
+        return admin;
     }
 
     @Transactional
     @Override
     public AdminResponse authorise(AdminRequest adminRequest) throws ServletException {
         httpServletRequest.login(adminRequest.getLogin(), adminRequest.getPassword());
+        return new AdminResponse();
 //        Admin admin = adminRepository.authorise(adminRequest.getLogin(), adminRequest.getPassword());
 //        if(admin != null){
 //            return adminMapper.toResponse(admin);
 //        } else {
 //            throw new AccountException("Пользователь не найден!");
 //        }
-        return new AdminResponse();
+
     }
 
     @Transactional

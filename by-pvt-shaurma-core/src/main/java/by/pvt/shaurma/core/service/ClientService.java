@@ -10,13 +10,14 @@ import by.pvt.shaurma.core.mapper.ClientMapper;
 import by.pvt.shaurma.core.repository.ClientDao;
 import org.hibernate.*;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ClientService implements ClientApi {
+public class ClientService implements ClientApi, UserDetailsService {
     private final ClientDao clientDao;
     private final ClientMapper clientMapper;
     private final SessionFactory sessionFactory;
@@ -63,7 +64,7 @@ public class ClientService implements ClientApi {
     }
 
     @Override
-    public UserDetails loadUserByUserName(String login) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         try{
             session = sessionFactory.openSession();
             transaction = session.beginTransaction();

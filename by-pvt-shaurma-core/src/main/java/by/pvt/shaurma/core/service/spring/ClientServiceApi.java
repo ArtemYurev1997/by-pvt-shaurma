@@ -9,7 +9,9 @@ import by.pvt.shaurma.core.mapper.spring.ClientMappers;
 import by.pvt.shaurma.core.repository.spring.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +23,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Primary
-public class ClientServiceApi implements ClientApi {
+//@Primary
+public class ClientServiceApi implements ClientApi, UserDetailsService {
     private final ClientRepository clientRepository;
     private final ClientMappers clientMappers;
 
@@ -51,8 +53,14 @@ public class ClientServiceApi implements ClientApi {
     }
 
     @Override
-    public UserDetails loadUserByUserName(String login) throws UsernameNotFoundException {
-        return clientRepository.loadUserByUserName(login);
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+        Client client = clientRepository.loadUserByUserName(login);
+        UserDetails user = User.builder()
+                    .username(client.getLogin())
+                    .password(client.getPassword())
+                    .roles(client.getRole())
+                    .build();
+        return user;
     }
 
     @Transactional
