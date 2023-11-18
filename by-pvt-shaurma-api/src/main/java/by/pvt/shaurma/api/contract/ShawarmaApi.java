@@ -7,5 +7,5 @@ import java.util.List;
 public interface ShawarmaApi {
     List<ShawarmaDto> getShawarmaDtoByIngridient(String name);
 
-    ShawarmaDto createShawarma(Long id, Long start, Long end, String type, Long code);
+    ShawarmaDto createShawarma( Long start, Long end, String type, Long code);
 }

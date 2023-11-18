@@ -5,7 +5,8 @@ public enum Status {
     WAITING("Ожидает подтверждения"),
     ON_THE_WAY("В пути"),
     DONE("Оформлен"),
-    PAY("Оплачен");
+    PAY("Оплачен"),
+    NO_PAY("Не оплачен");
 
     private String name;
 

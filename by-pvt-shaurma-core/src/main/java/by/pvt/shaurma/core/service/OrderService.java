@@ -19,6 +19,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.*;
@@ -68,6 +69,11 @@ public class OrderService implements OrderApi {
     }
 
     @Override
+    public Page<OrderResponse> getOrdersPages(int page, int size) {
+        return null;
+    }
+
+    @Override
     public OrderResponse createOrder(OrderRequest orderRequest) {
         Order order;
         order = new Order(null, new Client(), 0L, new BigDecimal(0), null, "Не оформлен", "Не оплачено");
@@ -75,19 +81,19 @@ public class OrderService implements OrderApi {
         return orderMapper.mapToOrderResponse(order);
     }
 
-    public OrderResponse updateOrderToClient(Long userId, Long orderId) {
-        Client client = clientDao.getClientById(userId);
-        Order order = orderDao.getOrderById(orderId);
+    public OrderResponse updateOrderToClient(OrderRequest orderRequest) {
+        Client client = clientDao.getClientById(orderRequest.getId());
+        Order order = orderDao.getOrderById(orderRequest.getUserId().getId());
         order.setUserId(client);
         orderDao.update(order);
-        return orderMapper.mapToOrderResponse(orderDao.getOrderById(orderId));
+        return orderMapper.mapToOrderResponse(orderDao.getOrderById(orderRequest.getId()));
     }
 
     @Override
-    public OrderResponse checkOut(Long orderId) {
-        Order order = orderDao.getOrderById(orderId);
+    public OrderResponse checkOut(OrderRequest orderRequest) {
+        Order order = orderDao.getOrderById(orderRequest.getId());
         Client user = order.getUserId();
-        Comment comment = new Comment(null, " ", LocalDateTime.now());
+        Comment comment = new Comment(null, " ", LocalDate.now(), user);
         order.setDate(LocalDate.now());
         order.setTelephone(user.getTelephone());
         order.setAddress(user.getAddress());
@@ -99,15 +105,18 @@ public class OrderService implements OrderApi {
     }
 
 //установить время жизни тразакции
-    public OrderResponse payment(BigDecimal sum, Long orderId, Long userId) {
+    public OrderResponse payment(OrderRequest orderRequest) {
         try {
             session = sessionFactory.openSession();
             transaction = session.beginTransaction();
+            Long orderId = orderRequest.getId();
+            Long userId = orderRequest.getUserId().getId();
+            BigDecimal sum = orderRequest.getCost();
             BigDecimal price = session.createQuery("select o.cost from Order o where o.id=:orderId and o.userId.id=:userId", BigDecimal.class).setParameter("orderId", orderId).setParameter("userId", userId).getSingleResult();
             int result = sum.compareTo(price);
             if (result == 0) {
                 System.out.println("Оплата прошла успешно! Заказ Оформлен!");
-                return checkOut(orderId);
+                return checkOut(orderRequest);
             }
             else {
               throw new PaymentException("Введите нужную сумму!");
@@ -128,51 +137,27 @@ public class OrderService implements OrderApi {
     }
 
     @Override
-    public OrderResponse changeStatus(Long orderId) {
+    public OrderResponse changeStatus(OrderRequest orderRequest) {
+        Long orderId = orderRequest.getId();
         Order order = orderDao.getOrderById(orderId);
         order.setStatus("Оформлен");
         orderDao.update(order);
         return orderMapper.mapToOrderResponse(order);
     }
 
+    @Override
+    public OrderResponse addCostAndCountToOrder(OrderRequest orderRequest) {
+        return null;
+    }
+
     public OrderResponse getOrderById(Long id) {
         return orderMapper.mapToOrderResponse(orderDao.getOrderById(id));
     }
 
-    public List<ShawarmaDto> getShawarmaDtoByIngridient(String name) {
-        ShawarmaMapper shawarmaMapper = new ShawarmaMapper();
-        session = sessionFactory.openSession();
-        List<Shawarma> shawarmas = session.createQuery("select s from Shawarma s join s.ingridients i where i.name=:name", Shawarma.class).setParameter("name", name).getResultList();
-        return shawarmas.stream().map(shawarmaMapper::toShawarmaDto).collect(Collectors.toList());
-    }
 
     @Override
-    public List<BurgerDto> getBurgersDtoByIngridient(String name) {
-        BurgerMapper burgerMapper = new BurgerMapper();
-        session = sessionFactory.openSession();
-        List<Burger> burgers = session.createQuery("select b from Burger s join b.ingridients i where i.name=:name", Burger.class).setParameter("name", name).getResultList();
-        return burgers.stream().map(burgerMapper::toBurgerDto).collect(Collectors.toList());
-    }
-
-    @Override
-    public CommentResponse createCommentByClient(Long clientId, CommentRequest commentRequest) {
+    public CommentResponse createCommentByClient( CommentRequest commentRequest) {
         return null;
-    }
-
-    public ShawarmaDto createShawarma(Long id, Long start, Long end, String type, Long code) {
-        ShawarmaMapper shawarmaMapper = new ShawarmaMapper();
-        Session session = sessionFactory.openSession();
-        session.getTransaction().begin();
-        Shawarma shawarma = new Shawarma(type, code, new BigDecimal(0));
-        List<Ingridient> ingridients = session.createQuery("select i from Ingridient i where i.id>=:start and i.id<=:end", Ingridient.class).setParameter("start", start).setParameter("end", end).getResultList();
-        int query = session.createQuery("update Ingridient i set i.total=i.total-:decrement where i.id>=:start and i.id<=:end", Ingridient.class).setParameter("decrement", 1L).setParameter("start", start).setParameter("end", end).executeUpdate();
-        BigDecimal price = session.createQuery("select sum(i.price) from Ingridient i where i.id>=:start and i.id<=:end", BigDecimal.class).setParameter("start", start).setParameter("end", end).getSingleResult();
-        shawarma.setPrice(price);
-        shawarma.setIngridients(ingridients);
-        session.persist(shawarma);
-        session.getTransaction().commit();
-        session.close();
-        return shawarmaMapper.toShawarmaDto(shawarma);
     }
 
     public List<Order> findAllOrdersWhereCostGreaterThan(BigDecimal cost) {

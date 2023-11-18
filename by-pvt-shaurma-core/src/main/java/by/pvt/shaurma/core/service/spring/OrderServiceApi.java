@@ -5,6 +5,7 @@ import by.pvt.shaurma.api.contract.OrderApi;
 import by.pvt.shaurma.api.dto.*;
 import by.pvt.shaurma.api.enums.Status;
 import by.pvt.shaurma.core.entity.*;
+import by.pvt.shaurma.core.exception.AccountException;
 import by.pvt.shaurma.core.exception.PaymentException;
 import by.pvt.shaurma.core.exception.ProgramException;
 import by.pvt.shaurma.core.mapper.spring.*;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class OrderServiceApi implements OrderApi {
     private final OrderRepository orderRepository;
     private final OrderMappers orderMappers;
@@ -35,12 +37,12 @@ public class OrderServiceApi implements OrderApi {
     private final CommentMappers commentMappers;
     private final BasketApi basketApi;
 
-    @Transactional
+
     public OrderResponse save(OrderRequest orderRequest) {
         return orderMappers.toResponse(orderRepository.save(orderMappers.toEntity(orderRequest)));
     }
 
-    @Transactional
+
     public void delete(Long id) {
         orderRepository.deleteById(id);
     }
@@ -62,21 +64,24 @@ public class OrderServiceApi implements OrderApi {
         return orderRepository.findAll().stream().map(orderMappers::toResponse).collect(Collectors.toList());
     }
 
-    @Transactional
+
     @Override
     public OrderResponse createOrder(OrderRequest orderRequest) {
         Order order;
-        Client client = clientMappers.toEntity(orderRequest.getUserId());
-        Optional<Order> createOrder = orderRepository.getOrdersByUserId(client.getId()).stream().filter(order1 -> Objects.equals(order1.getStatus(), Status.UNFORMED.getName())).findFirst();
-        if(createOrder.isEmpty()) {
-            order = new Order(null, client, orderRequest.getCount(), orderRequest.getCost(), orderRequest.getDate(), orderRequest.getTelephone(), orderRequest.getAddress(), orderRequest.getComment(), Status.UNFORMED.getName(), orderRequest.getPayment());
-            orderRepository.save(order);
+        Optional<Client> client = clientRepository.findById(orderRequest.getUserId().getId());
+        if(client.isPresent()) {
+            Optional<Order> createOrder = orderRepository.getOrdersByUserId(client.get().getId()).stream().filter(order1 -> Objects.equals(order1.getStatus(), Status.UNFORMED.getName())).findFirst();
+            if (createOrder.isEmpty()) {
+                order = new Order(null, client.get(), orderRequest.getCount(), orderRequest.getCost(), orderRequest.getDate(), orderRequest.getUserId().getTelephone(), orderRequest.getAddress(), orderRequest.getComment(), Status.UNFORMED.getName(), Status.NO_PAY.getName());
+                orderRepository.save(order);
+                return orderMappers.toResponse(order);
+            } else {
+                order = createOrder.get();
+            }
             return orderMappers.toResponse(order);
         }
-        else {
-            order = createOrder.get();
-        }
-        return orderMappers.toResponse(order);
+        else
+            throw new AccountException("Заказа с пользователем не существует");
     }
 
     @Override
@@ -108,7 +113,6 @@ public class OrderServiceApi implements OrderApi {
         return orderMappers.toResponse(order.get());
     }
 
-    @Transactional
     @Override
     public OrderResponse payment(OrderRequest orderRequest) {
         Long orderId = orderRequest.getId();
@@ -159,7 +163,6 @@ public class OrderServiceApi implements OrderApi {
         return orderMappers.toResponse(orderRepository.findById(id).get());
     }
 
-    @Transactional
     public CommentResponse createCommentByClient(CommentRequest commentRequest) {
         Optional<Client> clientId = clientRepository.findById(commentRequest.getClientId());
         Comment comment = null;

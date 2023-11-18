@@ -34,7 +34,7 @@ public class AdminServiceApi implements AdminApi, UserDetailsService {
     private final HttpServletRequest httpServletRequest;
 
     @Transactional
-//    @Secured({"ADMIN"})
+    @Secured({"ADMIN"})
     @Override
     public AdminResponse register(AdminRequest adminRequest) {
         if(adminRequest.getLogin() != null) {
@@ -58,19 +58,19 @@ public class AdminServiceApi implements AdminApi, UserDetailsService {
         return admin;
     }
 
-    @Transactional
-    @Override
-    public AdminResponse authorise(AdminRequest adminRequest) throws ServletException {
-        httpServletRequest.login(adminRequest.getLogin(), adminRequest.getPassword());
-        return new AdminResponse();
+//    @Transactional
+//    @Override
+//    public AdminResponse authorise(AdminRequest adminRequest) throws ServletException {
+//        httpServletRequest.login(adminRequest.getLogin(), adminRequest.getPassword());
+//        return new AdminResponse();
 //        Admin admin = adminRepository.authorise(adminRequest.getLogin(), adminRequest.getPassword());
 //        if(admin != null){
 //            return adminMapper.toResponse(admin);
 //        } else {
 //            throw new AccountException("Пользователь не найден!");
 //        }
-
-    }
+//
+//    }
 
     @Transactional
     @Override
@@ -91,6 +91,7 @@ public class AdminServiceApi implements AdminApi, UserDetailsService {
     }
 
     @Override
+//    @Secured({"ADMIN"})
     public List<AdminResponse> update(AdminRequest adminRequest) {
         Optional<Admin> admin = adminRepository.findById(adminRequest.getId());
         String password = passwordEncoder.encode(adminRequest.getPassword());

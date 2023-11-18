@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class IngridientDto {
+    private Long id;
     private String name;
     private BigDecimal price;
     private Long total;

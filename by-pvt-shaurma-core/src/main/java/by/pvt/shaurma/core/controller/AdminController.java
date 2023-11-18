@@ -46,8 +46,8 @@ public class AdminController {
         return adminApi.findAdminById(id);
     }
 
-    @PostMapping("/authorise")
-    public AdminResponse authorise(@RequestBody AdminRequest adminRequest) throws ServletException {
-        return adminApi.authorise(adminRequest);
-    }
+//    @PostMapping("/authorise")
+//    public AdminResponse authorise(@RequestBody AdminRequest adminRequest) throws ServletException {
+//        return adminApi.authorise(adminRequest);
+//    }
 }

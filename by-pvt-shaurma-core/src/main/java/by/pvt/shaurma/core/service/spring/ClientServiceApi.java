@@ -3,16 +3,19 @@ package by.pvt.shaurma.core.service.spring;
 import by.pvt.shaurma.api.contract.ClientApi;
 import by.pvt.shaurma.api.dto.ClientRequest;
 import by.pvt.shaurma.api.dto.ClientResponse;
+import by.pvt.shaurma.core.entity.Admin;
 import by.pvt.shaurma.core.entity.Client;
 import by.pvt.shaurma.core.exception.AccountException;
 import by.pvt.shaurma.core.mapper.spring.ClientMappers;
 import by.pvt.shaurma.core.repository.spring.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,14 +30,15 @@ import java.util.stream.Collectors;
 public class ClientServiceApi implements ClientApi, UserDetailsService {
     private final ClientRepository clientRepository;
     private final ClientMappers clientMappers;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public ClientResponse register(ClientRequest clientRequest) {
-        if(clientRequest.getName().equals("") | clientRequest.getSurname().equals("") | clientRequest.getLogin().equals("") | clientRequest.getPassword().equals("")) {
+        if (clientRequest.getName().equals("") | clientRequest.getSurname().equals("") | clientRequest.getLogin().equals("") | clientRequest.getPassword().equals("")) {
             throw new AccountException("Введите обязательные поля!");
         }
-        if(clientRequest.getLogin() != null) {
+        if (clientRequest.getLogin() != null) {
             throw new AccountException("Логин занят!");
         }
         Client client = clientMappers.toEntity(clientRequest);
@@ -56,10 +60,10 @@ public class ClientServiceApi implements ClientApi, UserDetailsService {
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         Client client = clientRepository.loadUserByUserName(login);
         UserDetails user = User.builder()
-                    .username(client.getLogin())
-                    .password(client.getPassword())
-                    .roles(client.getRole())
-                    .build();
+                .username(client.getLogin())
+                .password(client.getPassword())
+                .roles(client.getRole()).authorities(client.getAuthorities())
+                .build();
         return user;
     }
 
@@ -82,8 +86,14 @@ public class ClientServiceApi implements ClientApi, UserDetailsService {
 
     @Override
     @Transactional
+    @Secured({"ADMIN"})
     public List<ClientResponse> update(ClientRequest clientRequest) {
-        clientRepository.save(clientMappers.toEntity(clientRequest));
+        Optional<Client> client = clientRepository.findById(clientRequest.getId());
+        String password = passwordEncoder.encode(clientRequest.getPassword());
+        if (client.isPresent()) {
+            client.get().setPassword(password);
+            clientRepository.save(client.get());
+        }
         return getAllClients();
     }
 }

@@ -36,7 +36,7 @@ public class ClientController {
 
 
     @PostMapping("/update")
-    public List<ClientResponse> update(@Validated ClientRequest clientRequest) {
+    public List<ClientResponse> update( @RequestBody ClientRequest clientRequest) {
         return clientApi.update(clientRequest);
     }
 

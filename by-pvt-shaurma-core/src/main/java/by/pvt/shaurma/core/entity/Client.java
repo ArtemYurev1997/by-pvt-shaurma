@@ -31,7 +31,7 @@ public class Client extends User {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Order> orders;
-    @OneToMany(mappedBy = "client")
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @JsonIgnore

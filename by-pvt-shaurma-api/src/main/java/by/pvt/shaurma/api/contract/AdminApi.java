@@ -12,7 +12,7 @@ import java.util.List;
 public interface AdminApi {
     AdminResponse register(AdminRequest adminRequest);
 
-    AdminResponse authorise(AdminRequest adminRequest) throws ServletException;
+//    AdminResponse authorise(AdminRequest adminRequest) throws ServletException;
 
     void delete(Long id);
 

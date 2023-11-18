@@ -27,7 +27,7 @@ public class ShawarmaServiceApi implements ShawarmaApi {
     }
 
     @Transactional
-    public ShawarmaDto createShawarma(Long id, Long start, Long end, String type, Long code) {
+    public ShawarmaDto createShawarma(Long start, Long end, String type, Long code) {
         Shawarma shawarma = new Shawarma(type, code, new BigDecimal(0));
         Shawarma saveShawarma = shawarmaRepository.save(shawarma);
         List<Ingridient> ingridientList = ingridientRepository.selectIngridientsForCreate(start, end);

@@ -2,6 +2,7 @@ package by.pvt.shaurma.core.controller;
 
 import by.pvt.shaurma.api.contract.ShawarmaApi;
 import by.pvt.shaurma.api.dto.IngridientDto;
+import by.pvt.shaurma.api.dto.ShawarmaCreateRequest;
 import by.pvt.shaurma.api.dto.ShawarmaDto;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("shawarma")
+@RequestMapping("shawarmas")
 public class ShawarmaController {
     private final ShawarmaApi shawarmaApi;
 
@@ -26,10 +27,11 @@ public class ShawarmaController {
     }
 
     @PostMapping("/createShawarma")
-    ShawarmaDto createShawarma(@RequestBody ShawarmaDto shawarmaDto, Long start, Long end) {
-        Long id = shawarmaDto.getId();
-        String type = shawarmaDto.getType();
-        Long code = shawarmaDto.getCode();
-        return shawarmaApi.createShawarma(id, start, end, type, code);
+    ShawarmaDto createShawarma(@RequestBody ShawarmaCreateRequest shawarmaCreateRequest) {
+        String type = shawarmaCreateRequest.getShawarmaRequest().getType();
+        Long code = shawarmaCreateRequest.getShawarmaRequest().getCode();
+        Long start = shawarmaCreateRequest.getIngridientDto1().getId();
+        Long end = shawarmaCreateRequest.getIngridientDto2().getId();
+        return shawarmaApi.createShawarma(start, end, type, code);
     }
 }

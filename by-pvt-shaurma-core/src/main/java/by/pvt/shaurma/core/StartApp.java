@@ -15,12 +15,6 @@ import java.time.LocalDateTime;
 @EnableJpaRepositories("by.pvt.shaurma.core.repository")
 public class StartApp {
     public static void main(String[] args) {
-        ApplicationContext applicationContext = SpringApplication.run(StartApp.class, args);
-
-//        OrderApi orderApi = applicationContext.getBean("orderServiceApi", OrderApi.class);
-//        CommentRequest commentRequest = new CommentRequest();
-//        commentRequest.setComment("Жду к 7 часам!");
-//        commentRequest.setDate(LocalDateTime.now());
-//        System.out.println(orderApi.createCommentByClient(1L, commentRequest));
+        SpringApplication.run(StartApp.class, args);
     }
 }

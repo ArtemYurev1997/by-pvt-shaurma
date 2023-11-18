@@ -20,8 +20,9 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User implements UserDetails {
     @Id
-    @SequenceGenerator(name = "seq_user", sequenceName = "user_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_user")
+//    @SequenceGenerator(name = "seq_user", sequenceName = "user_seq", allocationSize = 1)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_user")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
     @Column(name = "name", nullable = false)
@@ -35,9 +36,13 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private String role;
 
+    public String getPassword() {
+        return password;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority( "USER"), new SimpleGrantedAuthority("ADMIN"));
+        return List.of(new SimpleGrantedAuthority(this.role));
     }
 
     @Override

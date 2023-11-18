@@ -1,15 +1,20 @@
 package by.pvt.shaurma.core;
 
+import by.pvt.shaurma.api.contract.OrderApi;
+import by.pvt.shaurma.api.dto.CommentRequest;
 import by.pvt.shaurma.core.mapper.BasketMapper;
 import by.pvt.shaurma.core.mapper.ClientMapper;
 import by.pvt.shaurma.core.mapper.OrderMapper;
 import by.pvt.shaurma.core.repository.impl.*;
 import by.pvt.shaurma.core.service.BasketService;
 import by.pvt.shaurma.core.service.OrderService;
+import by.pvt.shaurma.core.service.spring.OrderServiceApi;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class Main {
     public static void main(String[] args) {
@@ -153,5 +158,11 @@ public class Main {
 //        System.out.println(orderService.payment(new BigDecimal(37), 1L, 1L));
 //        System.out.println(orderService.getShawarmaDtoForIngridient("Курица"));
 //        System.out.println(orderService.createShawarma(8L, 1L, 6L));
+
+
+//        CommentRequest commentRequest = new CommentRequest();
+//        commentRequest.setComment("Жду к 7 часам!");
+//        commentRequest.setDate(LocalDateTime.now());
+//        System.out.println(orderApi.createCommentByClient(1L, commentRequest));
     }
 }

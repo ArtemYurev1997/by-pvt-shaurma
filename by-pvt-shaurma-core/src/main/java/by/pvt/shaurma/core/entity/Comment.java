@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Comment {
     @Id
+//    @SequenceGenerator(name = "seq_comment", sequenceName = "comment_seq", allocationSize = 1)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_comment")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
     private Long id;
@@ -23,7 +25,7 @@ public class Comment {
     private String comment;
     @Column(name = "date")
     private LocalDate date;
-    @OneToOne
+    @ManyToOne
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @JsonIgnore
